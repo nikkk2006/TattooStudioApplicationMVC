@@ -14,7 +14,9 @@ public class RegisterController {
 
     private void setupEventListeners() {
         view.getRegisterButton().addActionListener(e -> {
-            view.showSuccess("Регистрация (заглушка)");
+            // Теперь можем получить выбранную роль
+            String role = view.getSelectedRole();
+            view.showSuccess("Регистрация как " + role + " (заглушка)");
             openLoginWindow();
         });
 

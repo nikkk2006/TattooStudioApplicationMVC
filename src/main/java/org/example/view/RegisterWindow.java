@@ -3,6 +3,7 @@ package org.example.view;
 import org.example.utils.GradientPanel;
 import org.example.utils.UIConstants;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class RegisterWindow extends JFrame {
@@ -10,6 +11,7 @@ public class RegisterWindow extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
+    private JComboBox<String> roleComboBox;
     private JButton registerButton;
     private JButton loginButton;
     private JButton backButton;
@@ -21,7 +23,7 @@ public class RegisterWindow extends JFrame {
 
     private void initUI() {
         setTitle(UIConstants.APP_TITLE + " - Регистрация");
-        setSize(500, 600);
+        setSize(500, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -33,7 +35,7 @@ public class RegisterWindow extends JFrame {
                 UIConstants.SECONDARY_BACKGROUND
         );
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
 
         // Заголовок
         JLabel titleLabel = new JLabel("Создать аккаунт", SwingConstants.CENTER);
@@ -44,6 +46,11 @@ public class RegisterWindow extends JFrame {
         // Поля ввода
         nameField = createField("Ваше полное имя");
         emailField = createField("example@example.com");
+
+        // ComboBox для выбора роли
+        roleComboBox = new JComboBox<>(new String[]{"Клиент", "Мастер"});
+        styleComboBox(roleComboBox);
+
         passwordField = createPasswordField("Пароль");
         confirmPasswordField = createPasswordField("Повторите пароль");
 
@@ -53,16 +60,19 @@ public class RegisterWindow extends JFrame {
         backButton = createButton("Назад");
 
         // Компоновка
+        mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(titleLabel);
-        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(Box.createVerticalStrut(30));
         mainPanel.add(createLabeledComponent("Имя:", nameField));
-        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(createLabeledComponent("Email:", emailField));
-        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(createLabeledComponent("Роль:", roleComboBox));
+        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(createLabeledComponent("Пароль:", passwordField));
-        mainPanel.add(Box.createVerticalStrut(10));
-        mainPanel.add(createLabeledComponent("Подтверждение пароля:", confirmPasswordField));
-        mainPanel.add(Box.createVerticalStrut(25));
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(createLabeledComponent("Подтверждение:", confirmPasswordField));
+        mainPanel.add(Box.createVerticalStrut(30));
         mainPanel.add(registerButton);
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(loginButton);
@@ -94,6 +104,27 @@ public class RegisterWindow extends JFrame {
         field.setToolTipText(tooltip);
         field.setCaretColor(UIConstants.PRIMARY_TEXT_COLOR);
         return field;
+    }
+
+    private void styleComboBox(JComboBox<String> comboBox) {
+        comboBox.setMaximumSize(new Dimension(400, 35));
+        comboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        comboBox.setBackground(new Color(60, 60, 70));
+        comboBox.setForeground(Color.WHITE);
+        comboBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(80, 80, 90), 1),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setBackground(isSelected ? new Color(80, 80, 90) : new Color(60, 60, 70));
+                setForeground(Color.WHITE);
+                return this;
+            }
+        });
     }
 
     private JButton createButton(String text) {
@@ -140,27 +171,22 @@ public class RegisterWindow extends JFrame {
     public String getEmail() { return emailField.getText().trim(); }
     public String getPassword() { return new String(passwordField.getPassword()); }
     public String getConfirmPassword() { return new String(confirmPasswordField.getPassword()); }
+    public String getSelectedRole() { return (String) roleComboBox.getSelectedItem(); }
 
     // Методы управления окном
-    public void showWindow() {
-        setVisible(true);
+    public void showSuccess(String message) {
+        JOptionPane.showMessageDialog(this, message, "Успешно", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
     }
 
     public void close() {
         dispose();
     }
 
-    public void showSuccess(String message) {
-        JOptionPane.showMessageDialog(this,
-                message,
-                "Успешно",
-                JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public void showError(String message) {
-        JOptionPane.showMessageDialog(this,
-                message,
-                "Ошибка",
-                JOptionPane.ERROR_MESSAGE);
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
     }
 }
