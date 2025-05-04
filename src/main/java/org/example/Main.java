@@ -1,21 +1,28 @@
 package org.example;
 
-import org.example.controller.ClientController;
-import org.example.model.ClientModel;
-import org.example.view.ClientWindow;
-import org.example.view.MainWindow;
+import org.example.controller.MasterController;
+import org.example.model.MasterModel;
+import org.example.view.LoginWindow;
+import org.example.view.LoginWindow;
+import org.example.view.MasterWindow;
+import org.example.view.MasterWindow;
 
 public class Main {
     public static void main(String[] args) {
-        String clientName = "Client Name";
-        MainWindow mainWindow = new MainWindow();
+        String masterName = "Master Nikita";
 
-        ClientModel model = new ClientModel(clientName);
-        ClientWindow view = new ClientWindow(clientName);
-        new ClientController(model, view, mainWindow);
+        // Создаём компоненты MVC
+        MasterModel model = new MasterModel(masterName);
+        MasterWindow view = new MasterWindow(masterName);
+        LoginWindow loginView = new LoginWindow(); // Окно авторизации
 
+        // Создаём контроллер
+        new MasterController(model, view, loginView);
+
+        // Показываем окно мастера
         view.setVisible(true);
 
-        mainWindow.setVisible(false);
+        // Можно скрыть окно логина, если оно было
+        loginView.setVisible(false);
     }
 }
