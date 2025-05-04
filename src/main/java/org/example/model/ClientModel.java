@@ -1,24 +1,28 @@
 package org.example.model;
 
 public class ClientModel {
-    private String clientName;
+    private final User currentUser;
 
-    public ClientModel(String clientName) {
-        this.clientName = clientName;
+    public ClientModel(User user) {
+        this.currentUser = user;
     }
 
-    public String getClientName() {
-        return clientName;
+    public User getUser() {
+        return currentUser;
     }
 
-    // Здесь будут методы бизнес-логики, например:
-    public void chooseMaster() {
+    public boolean chooseMaster() {
         // Логика выбора мастера
+        return true;
     }
 
-    public void viewPortfolio() {
+    public boolean viewPortfolio() {
         // Логика просмотра портфолио
+        return true;
     }
 
-    // Другие методы модели...
+    public boolean makeAppointment() {
+        // Логика создания записи
+        return true;
+    }
 }

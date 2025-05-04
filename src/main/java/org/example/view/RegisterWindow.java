@@ -173,20 +173,19 @@ public class RegisterWindow extends JFrame {
     public String getConfirmPassword() { return new String(confirmPasswordField.getPassword()); }
     public String getSelectedRole() { return (String) roleComboBox.getSelectedItem(); }
 
-    // Методы управления окном
-    public void showSuccess(String message) {
-        JOptionPane.showMessageDialog(this, message, "Успешно", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
-    }
-
     public void close() {
         dispose();
     }
 
     public void setVisible(boolean visible) {
         super.setVisible(visible);
+    }
+
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showSuccess(String message) {
+        JOptionPane.showMessageDialog(this, message, "Успех", JOptionPane.INFORMATION_MESSAGE);
     }
 }

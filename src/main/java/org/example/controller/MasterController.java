@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.model.MasterModel;
+import org.example.model.User;
 import org.example.view.MasterWindow;
 import org.example.view.LoginWindow;
 
@@ -9,12 +10,11 @@ public class MasterController {
     private MasterModel model;
     private MasterWindow view;
     private LoginWindow loginView;
+    private final User user;
 
-    public MasterController(MasterModel model, MasterWindow view, LoginWindow loginView) {
-        this.model = model;
+    public MasterController(MasterWindow view, User user) {
         this.view = view;
-        this.loginView = loginView;
-
+        this.user = user;
         setupListeners();
     }
 

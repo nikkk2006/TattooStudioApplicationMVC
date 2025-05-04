@@ -3,12 +3,16 @@ package org.example.controller;
 import org.example.view.RegisterWindow;
 import org.example.view.LoginWindow;
 import org.example.view.MainWindow;
+import org.example.database.UserDao;
+import org.example.model.User;
 
 public class RegisterController {
     private final RegisterWindow view;
+    private final UserDao userDao; // Добавляем DAO
 
     public RegisterController(RegisterWindow view) {
         this.view = view;
+        this.userDao = new UserDao(); // Инициализируем DAO
         setupEventListeners();
     }
 
@@ -32,6 +36,33 @@ public class RegisterController {
             return;
         }
 
+        // Проверка email на валидность (базовая проверка)
+        if (!view.getEmail().contains("@") || !view.getEmail().contains(".")) {
+            view.showError("Введите корректный email");
+            return;
+        }
+
+        // Проверка, что пользователь с таким email не существует
+        if (userDao.getUserByEmail(view.getEmail()) != null) {
+            view.showError("Пользователь с таким email уже зарегистрирован");
+            return;
+        }
+
+        // Создаем нового пользователя
+        User newUser = new User(
+                view.getName(),
+                view.getEmail(),
+                view.getPassword(),
+                "CLIENT" // Роль по умолчанию (или можно выбрать из view)
+        );
+
+        // Пытаемся сохранить пользователя
+        if (userDao.createUser(newUser)) {
+            view.showSuccess("Регистрация прошла успешно!");
+            openLoginWindow(); // Перенаправляем на окно входа
+        } else {
+            view.showError("Ошибка при регистрации. Попробуйте позже.");
+        }
     }
 
     private void openLoginWindow() {

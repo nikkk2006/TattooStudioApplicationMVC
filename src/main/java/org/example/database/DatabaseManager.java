@@ -1,9 +1,6 @@
 package org.example.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DatabaseManager {
     private static final String DB_URL = "jdbc:sqlite:TattooStudio.db";
@@ -30,6 +27,17 @@ public class DatabaseManager {
             System.out.println("База данных инициализирована");
         } catch (SQLException e) {
             System.err.println("Ошибка при инициализации БД: " + e.getMessage());
+        }
+    }
+
+    public static boolean isDatabaseInitialized() {
+        // Проверка существования таблиц или файла БД
+        // Пример для SQLite:
+        try (Connection conn = getConnection();
+             ResultSet rs = conn.getMetaData().getTables(null, null, "users", null)) {
+            return rs.next(); // Если таблица существует, возвращает true
+        } catch (SQLException e) {
+            return false;
         }
     }
 }

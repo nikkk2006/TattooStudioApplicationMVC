@@ -2,6 +2,7 @@ package org.example.view;
 
 
 import org.example.model.MasterModel;
+import org.example.model.User;
 import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +14,11 @@ public class MasterWindow extends JFrame {
     private JButton viewScheduleButton;
     private JButton viewAppointmentsButton;
     private JButton logoutButton;
+    private final User user;
 
-    public MasterWindow(String masterName) {
-        initUI(masterName);
+    public MasterWindow(User user) {
+        this.user = user;
+        initUI(user.getName()); // Используем имя пользователя для отображения
     }
 
     private void initUI(String masterName) {
@@ -89,43 +92,6 @@ public class MasterWindow extends JFrame {
     public JButton getViewAppointmentsButton() { return viewAppointmentsButton; }
     public JButton getLogoutButton() { return logoutButton; }
 
-    // Методы для работы с UI
-//    public void showAddWorkDialog() {
-//        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
-//        panel.setOpaque(false);
-//
-//        JTextField titleField = new JTextField();
-//        JTextArea descriptionArea = new JTextArea(3, 20);
-//        JSpinner priceSpinner = new JSpinner(new SpinnerNumberModel(1000, 500, 50000, 500));
-//        JButton uploadBtn = new JButton("Загрузить фото");
-//
-//        panel.add(new JLabel("Название:"));
-//        panel.add(titleField);
-//        panel.add(new JLabel("Описание:"));
-//        panel.add(new JScrollPane(descriptionArea));
-//        panel.add(new JLabel("Цена:"));
-//        panel.add(priceSpinner);
-//        panel.add(new JLabel("Фото:"));
-//        panel.add(uploadBtn);
-//
-//        int result = JOptionPane.showConfirmDialog(
-//                this,
-//                panel,
-//                "Добавить работу",
-//                JOptionPane.OK_CANCEL_OPTION,
-//                JOptionPane.PLAIN_MESSAGE
-//        );
-//
-//        if (result == JOptionPane.OK_OPTION) {
-//            // Возвращаем данные через массив Object
-//            Object[] resultData = {
-//                    titleField.getText(),
-//                    descriptionArea.getText(),
-//                    priceSpinner.getValue()
-//            };
-//            // Контроллер получит эти данные и обработает
-//        }
-//    }
 
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);

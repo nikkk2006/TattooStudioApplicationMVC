@@ -1,21 +1,30 @@
 package org.example.controller;
 
-
 import org.example.model.ClientModel;
+import org.example.model.User;
 import org.example.view.ClientWindow;
 import org.example.view.MainWindow;
-
 
 public class ClientController {
     private ClientModel model;
     private ClientWindow view;
-    private MainWindow mainWindow;
+    private User currentUser;  // Добавляем текущего пользователя
 
+    // Основной конструктор
+    public ClientController(ClientWindow view, User user) {
+        this.view = view;
+        this.currentUser = user;
+        this.model = new ClientModel(user);  // Инициализируем модель с пользователем
+
+        setupListeners();
+    }
+
+    // Старый конструктор (можно оставить для совместимости или удалить)
+    @Deprecated
     public ClientController(ClientModel model, ClientWindow view, MainWindow mainWindow) {
         this.model = model;
         this.view = view;
-        this.mainWindow = mainWindow;
-
+        this.currentUser = model.getUser();  // Предполагая, что модель хранит пользователя
         setupListeners();
     }
 
@@ -29,24 +38,28 @@ public class ClientController {
 
     private void chooseMaster() {
         model.chooseMaster();
-        view.showMessage("Выбор мастера");
+        view.showMessage(currentUser.getName() + ", выберите мастера");
     }
 
     private void viewPortfolio() {
         model.viewPortfolio();
-        view.showMessage("Просмотр портфолио мастера");
+        view.showMessage("Портфолио доступных мастеров");
     }
 
     private void chooseDateTime() {
-        view.showMessage("Выбор даты и времени");
+        view.showMessage("Выберите удобное время для " + currentUser.getName());
     }
 
     private void makeAppointment() {
-        view.showMessage("Запись на татуировку");
+        if (model.makeAppointment()) {
+            view.showSuccess("Запись успешно создана для " + currentUser.getName());
+        } else {
+            view.showError("Ошибка при создании записи");
+        }
     }
 
     private void goBack() {
         view.dispose();
-        mainWindow.setVisible(true);
+        new MainWindow().setVisible(true);  // Создаем новое главное окно
     }
 }

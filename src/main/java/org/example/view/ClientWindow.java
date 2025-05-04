@@ -1,6 +1,6 @@
 package org.example.view;
 
-
+import org.example.model.User;
 import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,17 @@ public class ClientWindow extends JFrame {
     private JButton chooseDateTimeButton;
     private JButton makeAppointmentButton;
     private JButton backButton;
+    private User user; // Добавляем поле для хранения пользователя
 
+    // Основной конструктор, принимающий User
+    public ClientWindow(User user) {
+        this.user = user;
+        initComponents(user.getName()); // Используем имя пользователя
+        setupFrame();
+    }
+
+    // Устаревший конструктор (можно удалить, если не используется)
+    @Deprecated
     public ClientWindow(String clientName) {
         initComponents(clientName);
         setupFrame();
@@ -24,7 +34,7 @@ public class ClientWindow extends JFrame {
         mainPanel.setLayout(new BorderLayout());
 
         // Заголовок
-        JLabel welcomeLabel = new JLabel("Hello, " + clientName + "!", SwingConstants.CENTER);
+        JLabel welcomeLabel = new JLabel("Добро пожаловать, " + clientName + "!", SwingConstants.CENTER);
         welcomeLabel.setFont(MAIN_TITLE_FONT);
         welcomeLabel.setForeground(PRIMARY_TEXT_COLOR);
         welcomeLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
@@ -97,6 +107,9 @@ public class ClientWindow extends JFrame {
     public JButton getMakeAppointmentButton() { return makeAppointmentButton; }
     public JButton getBackButton() { return backButton; }
 
+    // Геттер для пользователя
+    public User getUser() { return user; }
+
     // Методы для работы с UI
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
@@ -104,5 +117,8 @@ public class ClientWindow extends JFrame {
 
     public void showError(String errorMessage) {
         JOptionPane.showMessageDialog(this, errorMessage, "Ошибка", JOptionPane.ERROR_MESSAGE);
+    }
+    public void showSuccess(String message) {
+        JOptionPane.showMessageDialog(this, message, "Успех", JOptionPane.INFORMATION_MESSAGE);
     }
 }

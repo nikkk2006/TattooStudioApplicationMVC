@@ -137,4 +137,12 @@ public class LoginWindow extends JFrame {
         dispose();
     }
 
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showSuccess(String message) {
+        JOptionPane.showMessageDialog(this, message, "Успех", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 }
