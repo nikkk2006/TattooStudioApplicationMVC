@@ -1,18 +1,28 @@
 package org.example.controller;
 
+import org.example.database.AppointmentDao;
+import org.example.database.ScheduleDao;
+import org.example.database.WorkDao;
 import org.example.view.RegisterWindow;
 import org.example.view.LoginWindow;
 import org.example.view.MainWindow;
+import org.example.view.MasterWindow;
 import org.example.database.UserDao;
 import org.example.model.User;
 
 public class RegisterController {
     private final RegisterWindow view;
-    private final UserDao userDao; // Добавляем DAO
+    private final UserDao userDao;
+    private final WorkDao workDao;
+    private final ScheduleDao scheduleDao;
+    private final AppointmentDao appointmentDao;
 
     public RegisterController(RegisterWindow view) {
         this.view = view;
-        this.userDao = new UserDao(); // Инициализируем DAO
+        this.userDao = new UserDao();
+        this.workDao = new WorkDao();
+        this.scheduleDao = new ScheduleDao();
+        this.appointmentDao = new AppointmentDao();
         setupEventListeners();
     }
 
@@ -36,33 +46,66 @@ public class RegisterController {
             return;
         }
 
-        // Проверка email на валидность (базовая проверка)
-        if (!view.getEmail().contains("@") || !view.getEmail().contains(".")) {
+        // Проверка email
+        if (!isValidEmail(view.getEmail())) {
             view.showError("Введите корректный email");
             return;
         }
 
-        // Проверка, что пользователь с таким email не существует
+        // Проверка существования пользователя
         if (userDao.getUserByEmail(view.getEmail()) != null) {
             view.showError("Пользователь с таким email уже зарегистрирован");
             return;
         }
 
-        // Создаем нового пользователя
+        // Создаем нового пользователя (без ID)
         User newUser = new User(
                 view.getName(),
                 view.getEmail(),
                 view.getPassword(),
-                "CLIENT" // Роль по умолчанию (или можно выбрать из view)
+                convertRoleToDatabaseFormat(view.getSelectedRole())
         );
 
-        // Пытаемся сохранить пользователя
+        // Сохраняем пользователя и получаем обновленный объект с ID
         if (userDao.createUser(newUser)) {
             view.showSuccess("Регистрация прошла успешно!");
-            openLoginWindow(); // Перенаправляем на окно входа
+
+            // Теперь newUser имеет установленный ID
+            if ("MASTER".equals(newUser.getRole())) {
+                openMasterWindow(newUser);
+            } else {
+                openLoginWindow();
+            }
         } else {
             view.showError("Ошибка при регистрации. Попробуйте позже.");
         }
+    }
+
+    private String convertRoleToDatabaseFormat(String selectedRole) {
+        // Преобразуем "Клиент"/"Мастер" в "CLIENT"/"MASTER"
+        return "Мастер".equals(selectedRole) ? "MASTER" : "CLIENT";
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email != null && email.matches(emailRegex);
+    }
+
+    private void openMasterWindow(User user) {
+        MasterWindow masterView = new MasterWindow(user);
+        LoginWindow loginView = new LoginWindow(); // Для возврата после logout
+
+        new MasterController(
+                masterView,
+                loginView,
+                user,
+                workDao,
+                scheduleDao,
+                appointmentDao
+        );
+
+        view.close();
+        masterView.setVisible(true);
     }
 
     private void openLoginWindow() {

@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import org.example.view.*;
-import org.example.database.UserDao;
+import org.example.database.*;
 import org.example.model.User;
 
 public class LoginController {
@@ -10,7 +10,7 @@ public class LoginController {
 
     public LoginController(LoginWindow view) {
         this.view = view;
-        this.userDao = new UserDao(); // Инициализация DAO
+        this.userDao = new UserDao();
         setupEventListeners();
     }
 
@@ -21,13 +21,11 @@ public class LoginController {
     }
 
     private void handleLogin() {
-        // Проверка заполнения полей
         if (view.getEmail().isEmpty() || view.getPassword().isEmpty()) {
             view.showError("Заполните все поля");
             return;
         }
 
-        // Аутентификация пользователя
         User user = userDao.getUserByEmail(view.getEmail());
 
         if (user == null) {
@@ -40,10 +38,7 @@ public class LoginController {
             return;
         }
 
-        // Успешная аутентификация
         view.showSuccess("Вход выполнен успешно!");
-
-        // Перенаправление в зависимости от роли
         redirectAfterLogin(user);
     }
 
@@ -59,7 +54,21 @@ public class LoginController {
 
             case "MASTER":
                 MasterWindow masterView = new MasterWindow(user);
-                new MasterController(masterView, user);
+                LoginWindow loginView = new LoginWindow();
+
+                // Инициализируем DAO
+                WorkDao workDao = new WorkDao();
+                ScheduleDao scheduleDao = new ScheduleDao();
+                AppointmentDao appointmentDao = new AppointmentDao();
+
+                new MasterController(
+                        masterView,
+                        loginView,
+                        user,
+                        workDao,
+                        scheduleDao,
+                        appointmentDao
+                );
                 masterView.setVisible(true);
                 break;
 

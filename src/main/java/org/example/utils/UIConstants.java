@@ -18,6 +18,7 @@ public class UIConstants {
      * PRIMARY_TEXT_COLOR - основной цвет текста
      */
     public static final Color MAIN_BACKGROUND = new Color(15, 15, 15);
+    public static final Color INPUT_BACKGROUND = new Color(255, 255, 255, 150);
     public static final Color SECONDARY_BACKGROUND = new Color(57, 57, 66);
     public static final Color PRIMARY_TEXT_COLOR = new Color(220, 220, 220);
 
@@ -33,6 +34,7 @@ public class UIConstants {
     public static final Color BUTTON_HOVER_COLOR = new Color(70, 70, 80);
     public static final Color BUTTON_BORDER = new Color(80, 80, 90);
     public static final Font BUTTON_FONT = new Font("Arial", Font.BOLD, 16);
+    public static final Font LABEL_FONT = new Font("Arial", Font.BOLD, 14);
     public static final Insets BUTTON_INSETS = new Insets(8, 20, 8, 20);
 
     /*
@@ -40,6 +42,7 @@ public class UIConstants {
      * MAIN_TITLE_FONT - шрифт главного заголовка
      */
     public static final Font MAIN_TITLE_FONT = new Font("Old English Text MT", Font.BOLD, 48);
+    public static final Font INPUT_FONT = new Font("Arial", Font.PLAIN, 14);
 
     /*
      * Размеры и отступы:
@@ -47,6 +50,7 @@ public class UIConstants {
      * BUTTON_PANEL_PADDING - отступы панели кнопок
      * TITLE_BOTTOM_PADDING - отступ под заголовком
      */
+    public static final Dimension WORK_WINDOW_SIZE = new Dimension(500, 600);
     public static final Dimension MAIN_WINDOW_SIZE = new Dimension(600, 450);
     public static final Insets BUTTON_PANEL_PADDING = new Insets(0, 80, 80, 80);
     public static final int TITLE_BOTTOM_PADDING = 100;

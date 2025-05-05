@@ -4,6 +4,7 @@ import org.example.model.ClientModel;
 import org.example.model.User;
 import org.example.view.ClientWindow;
 import org.example.view.MainWindow;
+import org.example.view.MasterSelectionWindow;
 
 public class ClientController {
     private ClientModel model;
@@ -37,8 +38,13 @@ public class ClientController {
     }
 
     private void chooseMaster() {
-        model.chooseMaster();
-        view.showMessage(currentUser.getName() + ", выберите мастера");
+//        model.chooseMaster();
+//        view.showMessage(currentUser.getName() + ", выберите мастера");
+        view.close();
+
+        MasterSelectionWindow masterSelectionView = new MasterSelectionWindow();
+        new MasterSelectionController(masterSelectionView, currentUser);
+        masterSelectionView.setVisible(true);
     }
 
     private void viewPortfolio() {

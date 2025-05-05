@@ -13,17 +13,51 @@ public class DatabaseManager {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
 
-            // Создание таблицы пользователей с вашими полями
-            String sql = "CREATE TABLE IF NOT EXISTS users (" +
+            // Таблица пользователей
+            String sqlUsers = "CREATE TABLE IF NOT EXISTS users (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "name TEXT NOT NULL," +
                     "email TEXT NOT NULL UNIQUE," +
                     "password TEXT NOT NULL," +
                     "role TEXT NOT NULL)";
+            stmt.execute(sqlUsers);
 
-            stmt.execute(sql);
+            // Таблица работ (только для мастеров)
+            String sqlWorks = "CREATE TABLE IF NOT EXISTS works (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER NOT NULL," +
+                    "title TEXT NOT NULL," +
+                    "description TEXT," +
+                    "price INTEGER NOT NULL," + // Добавляем столбец price
+                    "image_path TEXT NOT NULL," +
+                    "FOREIGN KEY (user_id) REFERENCES users(id))";
+            stmt.execute(sqlWorks);
 
-            // Можно добавить другие таблицы по необходимости
+            // Таблица расписания (только для мастеров)
+            String sqlSchedule = "CREATE TABLE IF NOT EXISTS schedule (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER NOT NULL," + // ID пользователя с ролью master
+                    "date DATE NOT NULL," +
+                    "start_time TIME NOT NULL," +
+                    "end_time TIME NOT NULL," +
+                    "is_available BOOLEAN DEFAULT TRUE," +
+                    "FOREIGN KEY (user_id) REFERENCES users(id))";
+            stmt.execute(sqlSchedule);
+
+            // Таблица записей клиентов
+            String sqlAppointments = "CREATE TABLE IF NOT EXISTS appointments (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "client_id INTEGER NOT NULL," + // ID пользователя с ролью client
+                    "master_id INTEGER NOT NULL," + // ID пользователя с ролью master
+                    "schedule_id INTEGER NOT NULL," +
+                    "tattoo_description TEXT," +
+                    "status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled'))," +
+                    "created_at DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (client_id) REFERENCES users(id)," +
+                    "FOREIGN KEY (master_id) REFERENCES users(id)," +
+                    "FOREIGN KEY (schedule_id) REFERENCES schedule(id))";
+            stmt.execute(sqlAppointments);
+
             System.out.println("База данных инициализирована");
         } catch (SQLException e) {
             System.err.println("Ошибка при инициализации БД: " + e.getMessage());
@@ -31,11 +65,9 @@ public class DatabaseManager {
     }
 
     public static boolean isDatabaseInitialized() {
-        // Проверка существования таблиц или файла БД
-        // Пример для SQLite:
         try (Connection conn = getConnection();
              ResultSet rs = conn.getMetaData().getTables(null, null, "users", null)) {
-            return rs.next(); // Если таблица существует, возвращает true
+            return rs.next();
         } catch (SQLException e) {
             return false;
         }

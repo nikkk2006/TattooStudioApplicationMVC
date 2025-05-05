@@ -9,18 +9,28 @@ public class UserDao {
         String sql = "INSERT INTO users(name, email, password, role) VALUES(?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getEmail());
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getRole());
-            pstmt.executeUpdate();
-            return true;
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                // Получаем сгенерированный ID
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        user.setId(rs.getInt(1)); // Устанавливаем ID пользователю
+                    }
+                }
+                return true;
+            }
         } catch (SQLException e) {
-            System.err.println("Ошибка при создании пользователя: " + e.getMessage());
-            return false;
+            e.printStackTrace();
         }
+        return false;
     }
 
     public User getUserByEmail(String email) {

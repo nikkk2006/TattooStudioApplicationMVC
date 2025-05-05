@@ -11,7 +11,6 @@ public class Main {
         if (!DatabaseManager.isDatabaseInitialized()) {
             DatabaseManager.initializeDatabase();
         }
-
         MainWindow mainView = new MainWindow();
         new MainController(mainView);
         mainView.setVisible(true);

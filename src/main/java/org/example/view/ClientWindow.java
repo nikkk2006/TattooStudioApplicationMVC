@@ -34,7 +34,7 @@ public class ClientWindow extends JFrame {
         mainPanel.setLayout(new BorderLayout());
 
         // Заголовок
-        JLabel welcomeLabel = new JLabel("Добро пожаловать, " + clientName + "!", SwingConstants.CENTER);
+        JLabel welcomeLabel = new JLabel("Welcome, " + clientName + "!", SwingConstants.CENTER);
         welcomeLabel.setFont(MAIN_TITLE_FONT);
         welcomeLabel.setForeground(PRIMARY_TEXT_COLOR);
         welcomeLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
@@ -120,5 +120,9 @@ public class ClientWindow extends JFrame {
     }
     public void showSuccess(String message) {
         JOptionPane.showMessageDialog(this, message, "Успех", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void close() {
+        dispose();
     }
 }
