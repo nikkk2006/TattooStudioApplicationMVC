@@ -12,7 +12,7 @@ import java.awt.*;
 public class WorkView extends JFrame {
     private JTextField titleField;
     private JTextArea descriptionArea;
-    private JButton uploadImageButton;  // Переименовано для единообразия
+    private JButton uploadImageButton;
     private JButton saveButton;
     private JButton cancelButton;
     private JLabel imagePreviewLabel;
@@ -37,79 +37,112 @@ public class WorkView extends JFrame {
                 UIConstants.MAIN_BACKGROUND,
                 UIConstants.SECONDARY_BACKGROUND
         );
-        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setLayout(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Панель формы
-        JPanel formPanel = new JPanel(new GridLayout(0, 1, 10, 10));
+        // Центральная панель с фиксированной шириной
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setOpaque(false);
+        formPanel.setMaximumSize(new Dimension(400, Integer.MAX_VALUE));
 
-        // Поля формы
-        titleField = createTextField("Название работы");
-        descriptionArea = createTextArea("Описание работы");
-        priceField = createTextField("Цена");
+        // Создаем компоненты
+        titleField = createStyledTextField("Название работы");
+        descriptionArea = createStyledTextArea("Описание работы");
+        priceField = createStyledTextField("Цена");
         imagePreviewLabel = new JLabel("", SwingConstants.CENTER);
-        imagePreviewLabel.setPreferredSize(new Dimension(300, 300));
+        imagePreviewLabel.setPreferredSize(new Dimension(300, 200));
 
-        // Кнопки
         uploadImageButton = createButton("Загрузить изображение");
         saveButton = createButton("Сохранить работу");
         cancelButton = createButton("Отмена");
 
-        // Добавление компонентов
-        formPanel.add(createLabel("Название работы:"));
-        formPanel.add(titleField);
-        formPanel.add(createLabel("Описание:"));
-        formPanel.add(new JScrollPane(descriptionArea));
-        formPanel.add(createLabel("Цена:"));
-        formPanel.add(priceField);
-        formPanel.add(createLabel("Изображение:"));
-        formPanel.add(imagePreviewLabel);
-        formPanel.add(uploadImageButton);
-        formPanel.add(saveButton);
-        formPanel.add(cancelButton);
+        // Добавляем компоненты с жесткими отступами
+        addComponentPair(formPanel, "Название работы:", titleField);
+        addComponentPair(formPanel, "Описание:", new JScrollPane(descriptionArea));
+        addComponentPair(formPanel, "Цена:", priceField);
 
-        mainPanel.add(formPanel, BorderLayout.CENTER);
+        // Добавляем изображение
+        JLabel imageLabel = createLabel("Изображение:");
+        formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        formPanel.add(imageLabel);
+        formPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        formPanel.add(imagePreviewLabel);
+        formPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+
+        // Добавляем кнопки
+        addButton(formPanel, uploadImageButton);
+        addButton(formPanel, saveButton);
+        addButton(formPanel, cancelButton);
+
+        // Центрируем форму
+        mainPanel.add(formPanel);
         add(mainPanel);
     }
 
-    private JTextField createTextField(String placeholder) {
+    private void addComponentPair(JPanel panel, String labelText, Component component) {
+        JLabel label = createLabel(labelText);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(label);
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        // Устанавливаем фиксированные размеры для компонентов ввода
+        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, component.getPreferredSize().height));
+        panel.add(component);
+    }
+
+    private void addButton(JPanel panel, JButton button) {
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        panel.add(button);
+    }
+
+    private JTextField createStyledTextField(String placeholder) {
         JTextField field = new JTextField();
         field.setFont(UIConstants.INPUT_FONT);
-        field.setBorder(UIConstants.createInputBorder());
-        field.setBackground(UIConstants.INPUT_BACKGROUND);
-        field.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(100, 100, 100), 1),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        field.setBackground(new Color(220, 220, 220));
+        field.setForeground(Color.BLACK);
         return field;
     }
 
-    private JTextArea createTextArea(String placeholder) {
-        JTextArea area = new JTextArea(5, 20);
+    private JTextArea createStyledTextArea(String placeholder) {
+        JTextArea area = new JTextArea(3, 20);
         area.setFont(UIConstants.INPUT_FONT);
-        area.setBorder(UIConstants.createInputBorder());
-        area.setBackground(UIConstants.INPUT_BACKGROUND);
-        area.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        area.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(100, 100, 100), 1),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        area.setBackground(new Color(220, 220, 220));
+        area.setForeground(Color.BLACK);
         area.setLineWrap(true);
+        area.setWrapStyleWord(true);
         return area;
     }
 
     private JButton createButton(String text) {
         JButton button = new JButton(text);
         button.setFont(UIConstants.BUTTON_FONT);
-        button.setBackground(UIConstants.BUTTON_COLOR);
-        button.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        button.setBackground(new Color(80, 80, 80));
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(UIConstants.createButtonBorder());
+        button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         return button;
     }
 
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(UIConstants.LABEL_FONT);
-        label.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        label.setFont(UIConstants.LABEL_FONT.deriveFont(Font.BOLD));
+        label.setForeground(new Color(240, 240, 240));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
         return label;
     }
 
-    public JButton getUploadImageButton() {  // Единообразное название
+    // Остальные методы остаются без изменений
+    public JButton getUploadImageButton() {
         return uploadImageButton;
     }
 
@@ -120,8 +153,6 @@ public class WorkView extends JFrame {
     public JButton getCancelButton() {
         return cancelButton;
     }
-
-    // Геттеры для контроллера
 
     public String getTitleText() {
         return titleField.getText();
