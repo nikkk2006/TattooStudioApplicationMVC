@@ -5,8 +5,6 @@ import org.example.model.User;
 import org.example.view.ClientWindow;
 import org.example.view.MasterSelectionWindow;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class MasterSelectionController {
@@ -16,28 +14,35 @@ public class MasterSelectionController {
     public MasterSelectionController(MasterSelectionWindow view, User user) {
         this.view = view;
         this.user = user;
-
-        // Загрузка мастеров (заглушка - замените на реальную загрузку из БД)
-        List<MasterModel> masters = List.of(
-                new MasterModel(1, "Иван Иванов", "Традиционные тату"),
-                new MasterModel(2, "Анна Петрова", "Минимализм"),
-                new MasterModel(3, "Сергей Сидоров", "Реализм")
-        );
-
-        view.displayMasters(masters);
         setupListeners();
+        loadAndDisplayMasters();
     }
 
     private void setupListeners() {
         view.getBackButton().addActionListener(e -> returnToClientWindow());
 
-        // Здесь можно добавить обработчик выбора мастера
+        view.addMasterSelectionListener(new MasterSelectionWindow.MasterSelectionListener() {
+            @Override
+            public void onMasterSelected(MasterModel master) {
+                System.out.println("Выбран мастер: " + master.getMasterName());
+                System.out.println("Специализация: " + master.getSpecialization());
+                System.out.println("Количество работ: " + master.getWorks().size());
+
+                // Здесь можно открыть детальное окно мастера
+                // new MasterDetailsController(master, user);
+            }
+        });
     }
 
-    private void returnToClientWindow(){
+    private void loadAndDisplayMasters() {
+        List<MasterModel> masters = MasterModel.getAllMasters();
+        view.displayMasters(masters);
+    }
+
+    private void returnToClientWindow() {
         ClientWindow clientView = new ClientWindow(user);
         new ClientController(clientView, user);
-        view.close();
+        view.dispose();
         clientView.setVisible(true);
     }
 }

@@ -1,36 +1,69 @@
 package org.example.model;
 
+import org.example.database.DatabaseManager;
+import org.example.database.WorkDao;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MasterModel {
-    private int id;  // Добавляем ID для связи с БД
+    private int id;
     private String masterName;
-    private String specialization;  // Специализация мастера
+    private String specialization;
     private List<Work> works;
-    private List<Appointment> appointments;
-
+    private List<Appointment> appointments; // Добавляем список записей
+    private List<ScheduleSlot> schedule; // Добавляем расписание
+    private transient WorkDao workDao;
 
     public MasterModel(int id, String masterName, String specialization) {
         this.id = id;
         this.masterName = masterName;
-        this.specialization = specialization;
+        this.specialization = specialization != null ? specialization : "";
         this.works = new ArrayList<>();
-        this.appointments = new ArrayList<>();
+        this.appointments = new ArrayList<>(); // Инициализируем список записей
+        this.schedule = new ArrayList<>(); // Инициализируем расписание
+        this.workDao = new WorkDao();
     }
 
 
-    // Статический вложенный класс Work (оставляем как есть)
+    public void loadWorksFromDatabase() {
+        this.works = workDao.getWorksByMaster(this.id);
+    }
+
+    public void loadAppointmentsFromDatabase() {
+        // Реализуйте этот метод, когда добавите AppointmentDao
+        // this.appointments = appointmentDao.getByMasterId(this.id);
+    }
+
+    public void loadScheduleFromDatabase() {
+        // Реализуйте этот метод, когда добавите ScheduleDao
+        // this.schedule = scheduleDao.getByMasterId(this.id);
+    }
+
+    public boolean addWorkToDatabase(String title, String description, int price, String imagePath) {
+        Work work = new Work(title, description, price, imagePath);
+        boolean success = workDao.createWork(this.id, work, imagePath);
+        if (success) {
+            loadWorksFromDatabase();
+        }
+        return success;
+    }
+
     public static class Work {
         private String title;
         private String description;
         private int price;
-        private String imagePath;  // Добавляем новое поле
+        private String imagePath;
 
         public Work(String title, String description, int price) {
             this(title, description, price, null);
         }
-        // Обновленный конструктор
+
         public Work(String title, String description, int price, String imagePath) {
             this.title = title;
             this.description = description;
@@ -38,17 +71,14 @@ public class MasterModel {
             this.imagePath = imagePath;
         }
 
-        // Геттеры
+        // Геттеры и сеттеры
         public String getTitle() { return title; }
         public String getDescription() { return description; }
         public int getPrice() { return price; }
         public String getImagePath() { return imagePath; }
-
-        // Сеттеры (если нужны)
         public void setImagePath(String imagePath) { this.imagePath = imagePath; }
     }
 
-    // Статический вложенный класс Appointment (добавляем геттеры)
     public static class Appointment {
         private String clientName;
         private String date;
@@ -62,12 +92,13 @@ public class MasterModel {
             this.workTitle = workTitle;
         }
 
-        // Добавленные геттеры
+        // Геттеры
         public String getClientName() { return clientName; }
         public String getDate() { return date; }
         public String getTime() { return time; }
         public String getWorkTitle() { return workTitle; }
     }
+
     public static class ScheduleSlot {
         private String date;
         private String startTime;
@@ -81,36 +112,55 @@ public class MasterModel {
             this.isAvailable = isAvailable;
         }
 
-        // Геттеры
+        // Геттеры и сеттеры
         public String getDate() { return date; }
         public String getStartTime() { return startTime; }
         public String getEndTime() { return endTime; }
         public boolean isAvailable() { return isAvailable; }
-
-        // Сеттеры (при необходимости)
         public void setAvailable(boolean available) { isAvailable = available; }
     }
 
-    // Новые геттеры для добавленных полей
+    // Геттеры
     public int getId() { return id; }
-    public String getSpecialization() { return specialization; }
-
-    // Существующие геттеры
     public String getMasterName() { return masterName; }
+    public String getSpecialization() { return specialization; }
     public List<Work> getWorks() { return works; }
     public List<Appointment> getAppointments() { return appointments; }
+    public List<ScheduleSlot> getSchedule() { return schedule; }
 
-    // Метод для загрузки мастеров из БД
-    public static List<MasterModel> getAllMasters() {
-        List<MasterModel> masters = new ArrayList<>();
-        // Здесь должна быть реализация загрузки из БД
-        // Пример:
-        // masters = DatabaseManager.getMasters();
-        return masters;
+    // Методы для работы с расписанием
+    public boolean isAvailable(String date, String time) {
+        return schedule.stream()
+                .anyMatch(slot -> slot.getDate().equals(date) &&
+                        slot.getStartTime().compareTo(time) <= 0 &&
+                        slot.getEndTime().compareTo(time) >= 0 &&
+                        slot.isAvailable());
     }
 
-    // Бизнес-логика (оставляем как есть)
-    public void addWork(String title, String description, int price, String imagePath) {
-        works.add(new Work(title, description, price, imagePath));
+    // Метод для загрузки всех мастеров
+    public static List<MasterModel> getAllMasters() {
+        List<MasterModel> masters = new ArrayList<>();
+        // Используем только существующие столбцы
+        String sql = "SELECT id, name FROM users WHERE role = 'MASTER'";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                // Создаем мастера без специализации (можно использовать пустую строку или null)
+                MasterModel master = new MasterModel(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        "" // Пустая строка вместо специализации
+                );
+                master.loadWorksFromDatabase();
+                masters.add(master);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при загрузке мастеров: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return masters;
     }
 }

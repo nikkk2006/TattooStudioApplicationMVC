@@ -10,8 +10,7 @@ import java.util.List;
 
 public class MasterSelectionWindow extends JFrame {
     private JButton backButton;
-    private JPanel mastersPanel;
-    private JLabel titleLabel;
+    private JList<MasterModel> mastersList;
 
     public MasterSelectionWindow() {
         initUI();
@@ -19,14 +18,15 @@ public class MasterSelectionWindow extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Выбор мастера");
-        setSize(400, 600); // Уже окно для списка
+        setTitle(UIConstants.APP_TITLE + " - Выбор мастера");
+        setSize(UIConstants.MAIN_WINDOW_SIZE);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
     }
 
     private void setupLayout() {
+        // Основная панель с градиентом
         GradientPanel mainPanel = new GradientPanel(
                 UIConstants.MAIN_BACKGROUND,
                 UIConstants.SECONDARY_BACKGROUND
@@ -34,70 +34,100 @@ public class MasterSelectionWindow extends JFrame {
         mainPanel.setLayout(new BorderLayout());
 
         // Заголовок
-        titleLabel = new JLabel("Выберите мастера", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        JLabel titleLabel = new JLabel("Choose the master", SwingConstants.CENTER);
+        titleLabel.setFont(UIConstants.MAIN_TITLE_FONT);
+        titleLabel.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(
+                UIConstants.TITLE_TOP_PADDING, 0,
+                UIConstants.TITLE_BOTTOM_PADDING, 0
+        ));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Панель с мастерами - вертикальный список
-        mastersPanel = new JPanel();
-        mastersPanel.setLayout(new BoxLayout(mastersPanel, BoxLayout.Y_AXIS));
-        mastersPanel.setOpaque(false);
-        mastersPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        // Список мастеров
+        mastersList = new JList<>();
+        mastersList.setCellRenderer(new MasterListRenderer());
+        mastersList.setBackground(UIConstants.SECONDARY_BACKGROUND);
+        mastersList.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        mastersList.setSelectionBackground(UIConstants.BUTTON_COLOR);
+        mastersList.setSelectionForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        mastersList.setFont(UIConstants.BUTTON_FONT);
+        mastersList.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JScrollPane scrollPane = new JScrollPane(mastersPanel);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
+        JScrollPane scrollPane = new JScrollPane(mastersList);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(UIConstants.SECONDARY_BACKGROUND);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Кнопка "Назад"
-        backButton = new JButton("Назад");
-        backButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        backButton.setBackground(new Color(70, 70, 70));
-        backButton.setForeground(Color.WHITE);
-        backButton.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
-
+        backButton = createButton("Назад");
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(
+                0, 0, UIConstants.BUTTON_PANEL_PADDING.bottom, 0
+        ));
         buttonPanel.add(backButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
     }
 
-    public void displayMasters(List<MasterModel> masters) {
-        mastersPanel.removeAll();
-
-        for (MasterModel master : masters) {
-            JButton masterButton = createMasterButton(master);
-            masterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            mastersPanel.add(masterButton);
-            mastersPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Отступ между кнопками
-        }
-
-        mastersPanel.revalidate();
-        mastersPanel.repaint();
+    private JButton createButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(UIConstants.BUTTON_FONT);
+        button.setBackground(UIConstants.BUTTON_COLOR);
+        button.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        button.setFocusPainted(false);
+        button.setBorder(UIConstants.createButtonBorder());
+        button.setPreferredSize(new Dimension(
+                UIConstants.BUTTON_WIDTH,
+                UIConstants.BUTTON_HEIGHT
+        ));
+        return button;
     }
 
-    private JButton createMasterButton(MasterModel master) {
-        JButton button = new JButton(master.getMasterName() + " - " + master.getSpecialization());
-        button.setFont(new Font("Arial", Font.PLAIN, 16));
-        button.setBackground(new Color(50, 50, 50));
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(15, 30, 15, 30));
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Ширина на весь экран
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+    public void displayMasters(List<MasterModel> masters) {
+        DefaultListModel<MasterModel> model = new DefaultListModel<>();
+        for (MasterModel master : masters) {
+            model.addElement(master);
+        }
+        mastersList.setModel(model);
+        mastersList.repaint();
+    }
 
-        // Можно добавить обработчик выбора мастера
-        button.addActionListener(e -> {
-            // Здесь будет логика выбора мастера
-            System.out.println("Выбран мастер: " + master.getMasterName());
+    private static class MasterListRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            if (value instanceof MasterModel) {
+                MasterModel master = (MasterModel) value;
+                setText(master.getMasterName());
+                setIcon(new ImageIcon("path/to/default/icon.png")); // Добавьте иконку при необходимости
+                setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            }
+            return this;
+        }
+    }
+
+    public interface MasterSelectionListener {
+        void onMasterSelected(MasterModel master);
+    }
+
+    private MasterSelectionListener masterSelectionListener;
+
+    public void addMasterSelectionListener(MasterSelectionListener listener) {
+        this.masterSelectionListener = listener;
+        mastersList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && masterSelectionListener != null) {
+                MasterModel selected = mastersList.getSelectedValue();
+                if (selected != null) {
+                    masterSelectionListener.onMasterSelected(selected);
+                }
+            }
         });
-
-        return button;
     }
 
     public JButton getBackButton() {

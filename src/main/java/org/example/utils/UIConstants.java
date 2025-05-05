@@ -56,6 +56,11 @@ public class UIConstants {
     public static final int TITLE_BOTTOM_PADDING = 100;
     public static final int BUTTON_GAP = 20;
 
+
+    public static final int TITLE_TOP_PADDING = 30;
+    public static final int BUTTON_WIDTH = 120;
+    public static final int BUTTON_HEIGHT = 40;
+
     /*
      * Методы для создания границ:
      * createButtonBorder() - граница для кнопок
