@@ -1,111 +1,56 @@
 package org.example.database;
 
-import org.example.model.MasterModel.ScheduleSlot;
+import org.example.model.ScheduleModel;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleDao {
-    private static final String CREATE_SLOT_SQL =
-            "INSERT INTO schedule(master_id, date, start_time, end_time, is_available) VALUES(?, ?, ?, ?, ?)";
-    private static final String GET_AVAILABLE_SLOTS_SQL =
-            "SELECT * FROM schedule WHERE master_id = ? AND date = ? AND is_available = TRUE ORDER BY start_time";
-    private static final String GET_MASTER_SCHEDULE_SQL =
-            "SELECT * FROM schedule WHERE master_id = ? AND date >= ? ORDER BY date, start_time";
-    private static final String UPDATE_SLOT_AVAILABILITY_SQL =
-            "UPDATE schedule SET is_available = ? WHERE id = ? AND master_id = ?";
-    private static final String DELETE_SLOT_SQL =
-            "DELETE FROM schedule WHERE id = ? AND master_id = ?";
+    public static void addScheduleSlot(ScheduleModel schedule) throws SQLException {
+        String sql = "INSERT INTO schedule (user_id, date, start_time, end_time, is_available) VALUES (?, ?, ?, ?, ?)";
 
-    public boolean createScheduleSlot(int masterId, ScheduleSlot slot) {
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(CREATE_SLOT_SQL)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, masterId);
-            pstmt.setString(2, slot.getDate());
-            pstmt.setString(3, slot.getStartTime());
-            pstmt.setString(4, slot.getEndTime());
-            pstmt.setBoolean(5, slot.isAvailable());
-            pstmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Ошибка при создании слота расписания: " + e.getMessage());
-            return false;
+            // Преобразование LocalDate → java.sql.Date
+            stmt.setInt(1, schedule.getMasterId());
+            stmt.setString(2, schedule.getDate().toString()); // Для SQLite используем строку
+            stmt.setString(3, schedule.getStartTime().toString()); // Для SQLite используем строку
+            stmt.setString(4, schedule.getEndTime().toString()); // Для SQLite используем строку
+            stmt.setBoolean(5, schedule.isAvailable());
+
+            stmt.executeUpdate();
         }
     }
 
-    public List<ScheduleSlot> getAvailableSlots(int masterId, String date) {
-        List<ScheduleSlot> slots = new ArrayList<>();
+    public static List<ScheduleModel> getMasterSchedule(int masterId) throws SQLException {
+        List<ScheduleModel> scheduleList = new ArrayList<>();
+        String sql = "SELECT * FROM schedule WHERE user_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(GET_AVAILABLE_SLOTS_SQL)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, masterId);
-            pstmt.setString(2, date);
-            ResultSet rs = pstmt.executeQuery();
+            stmt.setInt(1, masterId);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                slots.add(new ScheduleSlot(
-                        rs.getString("date"),
-                        rs.getString("start_time"),
-                        rs.getString("end_time"),
-                        rs.getBoolean("is_available")
-                ));
+                ScheduleModel schedule = new ScheduleModel();
+                schedule.setId(rs.getInt("id"));
+                schedule.setMasterId(rs.getInt("user_id"));
+
+                // Для SQLite читаем как строку и преобразуем в LocalDate
+                schedule.setDate(LocalDate.parse(rs.getString("date")));
+
+                // Для SQLite читаем как строку и преобразуем в LocalTime
+                schedule.setStartTime(LocalTime.parse(rs.getString("start_time")));
+                schedule.setEndTime(LocalTime.parse(rs.getString("end_time")));
+                schedule.setAvailable(rs.getBoolean("is_available"));
+
+                scheduleList.add(schedule);
             }
-        } catch (SQLException e) {
-            System.err.println("Ошибка при получении доступных слотов: " + e.getMessage());
         }
-        return slots;
-    }
-
-    public List<ScheduleSlot> getMasterSchedule(int masterId, String fromDate) {
-        List<ScheduleSlot> schedule = new ArrayList<>();
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(GET_MASTER_SCHEDULE_SQL)) {
-
-            pstmt.setInt(1, masterId);
-            pstmt.setString(2, fromDate);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                schedule.add(new ScheduleSlot(
-                        rs.getString("date"),
-                        rs.getString("start_time"),
-                        rs.getString("end_time"),
-                        rs.getBoolean("is_available")
-                ));
-            }
-        } catch (SQLException e) {
-            System.err.println("Ошибка при получении расписания мастера: " + e.getMessage());
-        }
-        return schedule;
-    }
-
-    public boolean updateSlotAvailability(int slotId, int masterId, boolean isAvailable) {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(UPDATE_SLOT_AVAILABILITY_SQL)) {
-
-            pstmt.setBoolean(1, isAvailable);
-            pstmt.setInt(2, slotId);
-            pstmt.setInt(3, masterId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Ошибка при обновлении статуса слота: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean deleteScheduleSlot(int slotId, int masterId) {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(DELETE_SLOT_SQL)) {
-
-            pstmt.setInt(1, slotId);
-            pstmt.setInt(2, masterId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Ошибка при удалении слота расписания: " + e.getMessage());
-            return false;
-        }
+        return scheduleList;
     }
 }
