@@ -47,7 +47,7 @@ public class ClientController {
         view.getChooseMasterButton().addActionListener(e -> chooseMaster());
         view.getMakeAppointmentButton().addActionListener(e -> {
             AppointmentWindow appointmentWindow = new AppointmentWindow();
-            new AppointmentController(appointmentWindow);
+            new AppointmentController(appointmentWindow, currentUser);
             view.close();
             appointmentWindow.setVisible(true);
         });

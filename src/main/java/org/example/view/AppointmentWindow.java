@@ -3,12 +3,13 @@ package org.example.view;
 import org.example.utils.GradientPanel;
 import org.example.utils.UIConstants;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-
 
 public class AppointmentWindow extends JFrame {
     private JLabel titleLabel;
     private JButton backButton;
+    private JTable scheduleTable;
 
     public AppointmentWindow() {
         initUI();
@@ -33,12 +34,38 @@ public class AppointmentWindow extends JFrame {
 
         mainPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Центральная панель с содержимым
-        JPanel centerPanel = new JPanel();
+        // Центральная панель с таблицей
+        JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
+        // Создаем модель таблицы
+        DefaultTableModel tableModel = new DefaultTableModel(
+                new Object[]{"Мастер", "Дата", "Начало", "Конец", "Доступно"}, 0) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return columnIndex == 4 ? Boolean.class : String.class;
+            }
+        };
+
+        // Создаем таблицу с моделью
+        scheduleTable = new JTable(tableModel);
+        scheduleTable.setFont(UIConstants.BUTTON_FONT);
+        scheduleTable.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        scheduleTable.setBackground(UIConstants.SECONDARY_BACKGROUND);
+        scheduleTable.setSelectionBackground(UIConstants.BUTTON_COLOR);
+        scheduleTable.setSelectionForeground(UIConstants.PRIMARY_TEXT_COLOR);
+        scheduleTable.setRowHeight(30);
+        scheduleTable.setFillsViewportHeight(true);
+        scheduleTable.getTableHeader().setFont(UIConstants.BUTTON_FONT);
+        scheduleTable.getTableHeader().setBackground(UIConstants.BUTTON_COLOR);
+        scheduleTable.getTableHeader().setForeground(UIConstants.PRIMARY_TEXT_COLOR);
+
+        JScrollPane scrollPane = new JScrollPane(scheduleTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(UIConstants.SECONDARY_BACKGROUND);
+
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         // Панель с кнопкой "Назад" внизу
@@ -88,9 +115,23 @@ public class AppointmentWindow extends JFrame {
         return button;
     }
 
+    // Метод для добавления данных в таблицу
+    public void addScheduleRow(String master, String date, String startTime, String endTime, boolean isAvailable) {
+        DefaultTableModel model = (DefaultTableModel) scheduleTable.getModel();
+        model.addRow(new Object[]{master, date, startTime, endTime, isAvailable});
+    }
+
+    // Метод для очистки таблицы
+    public void clearTable() {
+        DefaultTableModel model = (DefaultTableModel) scheduleTable.getModel();
+        model.setRowCount(0);
+    }
+
     public void close() {
         dispose();
     }
 
-    public JButton getBackButton() { return backButton; }
+    public JButton getBackButton() {
+        return backButton;
+    }
 }
