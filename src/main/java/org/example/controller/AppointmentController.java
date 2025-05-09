@@ -1,42 +1,36 @@
-// AppointmentController.java
 package org.example.controller;
 
 import org.example.database.AppointmentDao;
-import org.example.database.ScheduleDao;
-import org.example.database.UserDao;
 import org.example.model.User;
 import org.example.view.AppointmentWindow;
 import org.example.view.ClientWindow;
 
-
 public class AppointmentController {
-    private final AppointmentWindow view;
-    private User user;
-    private final AppointmentDao appointmentDao;
-    private final ScheduleDao scheduleDao;
+    private AppointmentWindow view;
+    private User currentUser;
+    private AppointmentDao appointmentDao;
 
-    public AppointmentController(AppointmentWindow view, User user) {
+    public AppointmentController(AppointmentWindow view, User currentUser, AppointmentDao appointmentDao) {
         this.view = view;
-        this.user = user;
-        this.appointmentDao = new AppointmentDao();
-        this.scheduleDao = new ScheduleDao();
+        this.currentUser = currentUser;
+        this.appointmentDao = appointmentDao;
 
-        setupEventListeners();
+        setupListeners();
     }
 
-    private void setupEventListeners() {
-        view.getBackButton().addActionListener(e -> returnToClientWindow());
+    private void setupListeners() {
+        view.getBackButton().addActionListener(e -> goBack());
+        view.getRefreshButton().addActionListener(e -> refreshSchedule());
     }
 
-    private void returnToClientWindow() {
-        ClientWindow clientView = new ClientWindow(user);
-        // Инициализируем DAO для ClientController
-        AppointmentDao appointmentDao = new AppointmentDao();
-        UserDao userDao = new UserDao();
-        ScheduleDao scheduleDao = new ScheduleDao();
-        new ClientController(clientView, user, appointmentDao, userDao, scheduleDao);
-        view.dispose();
-        clientView.setVisible(true);
+    private void refreshSchedule() {
+        // Здесь можно добавить логику обновления расписания
+        // Например, перезагрузить данные из базы
     }
 
+    private void goBack() {
+        view.close();
+        // Возвращаемся к предыдущему окну
+        new ClientWindow(currentUser).setVisible(true);
+    }
 }

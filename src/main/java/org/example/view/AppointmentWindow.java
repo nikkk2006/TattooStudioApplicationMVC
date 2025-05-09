@@ -1,19 +1,26 @@
 package org.example.view;
 
+import org.example.model.MasterModel;
 import org.example.utils.GradientPanel;
 import org.example.utils.UIConstants;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class AppointmentWindow extends JFrame {
     private JLabel titleLabel;
     private JButton backButton;
+    private JButton refreshButton;
     private JTable scheduleTable;
+    private List<MasterModel> masters;
 
-    public AppointmentWindow() {
+    public AppointmentWindow(List<MasterModel> masters) {
+        this.masters = masters;
         initUI();
         setupLayout();
+        loadSchedules();
     }
 
     private void setupLayout() {
@@ -46,9 +53,13 @@ public class AppointmentWindow extends JFrame {
             public Class<?> getColumnClass(int columnIndex) {
                 return columnIndex == 4 ? Boolean.class : String.class;
             }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
 
-        // Создаем таблицу с моделью
         scheduleTable = new JTable(tableModel);
         scheduleTable.setFont(UIConstants.BUTTON_FONT);
         scheduleTable.setForeground(UIConstants.PRIMARY_TEXT_COLOR);
@@ -68,21 +79,59 @@ public class AppointmentWindow extends JFrame {
         centerPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Панель с кнопкой "Назад" внизу
+        // Панель с кнопками внизу
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
+        refreshButton = createButton("Обновить");
+        refreshButton.addActionListener(e -> loadSchedules());
+
         backButton = createButton("Назад");
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         bottomPanel.add(Box.createHorizontalGlue());
+        bottomPanel.add(refreshButton);
+        bottomPanel.add(Box.createHorizontalStrut(20));
         bottomPanel.add(backButton);
         bottomPanel.add(Box.createHorizontalGlue());
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
+    }
+
+    // Метод для загрузки расписания мастеров
+    private void loadSchedules() {
+        clearTable();
+
+        if (masters == null) {
+            return;
+        }
+
+        for (MasterModel master : masters) {
+
+            if (master.getSchedule().isEmpty()) {
+                addScheduleRow(
+                        master.getMasterName(),
+                        "Нет данных",
+                        "",
+                        "",
+                        false
+                );
+            } else {
+                for (MasterModel.ScheduleSlot slot : master.getSchedule()) {
+                    addScheduleRow(
+                            master.getMasterName(),
+                            slot.getDate(),
+                            slot.getStartTime(),
+                            slot.getEndTime(),
+                            slot.isAvailable()
+                    );
+                }
+            }
+        }
     }
 
     private void initUI() {
@@ -115,13 +164,11 @@ public class AppointmentWindow extends JFrame {
         return button;
     }
 
-    // Метод для добавления данных в таблицу
     public void addScheduleRow(String master, String date, String startTime, String endTime, boolean isAvailable) {
         DefaultTableModel model = (DefaultTableModel) scheduleTable.getModel();
         model.addRow(new Object[]{master, date, startTime, endTime, isAvailable});
     }
 
-    // Метод для очистки таблицы
     public void clearTable() {
         DefaultTableModel model = (DefaultTableModel) scheduleTable.getModel();
         model.setRowCount(0);
@@ -133,5 +180,9 @@ public class AppointmentWindow extends JFrame {
 
     public JButton getBackButton() {
         return backButton;
+    }
+
+    public JButton getRefreshButton() {
+        return refreshButton;
     }
 }

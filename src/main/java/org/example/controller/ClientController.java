@@ -5,6 +5,7 @@ import org.example.database.UserDao;
 import org.example.database.ScheduleDao;
 import org.example.model.AppointmentModel;
 import org.example.model.ClientModel;
+import org.example.model.MasterModel;
 import org.example.model.User;
 import org.example.view.AppointmentWindow;
 import org.example.view.ClientWindow;
@@ -23,7 +24,7 @@ public class ClientController {
     private AppointmentDao appointmentDao;
     private UserDao userDao;
     private ScheduleDao scheduleDao;
-    private Map<String, Integer> mastersMap; // Хранит соответствие имени мастера и его ID
+    private Map<String, Integer> mastersMap;
 
     public ClientController(ClientWindow view, User user,
                             AppointmentDao appointmentDao, UserDao userDao, ScheduleDao scheduleDao) {
@@ -45,13 +46,24 @@ public class ClientController {
 
     private void setupListeners() {
         view.getChooseMasterButton().addActionListener(e -> chooseMaster());
-        view.getMakeAppointmentButton().addActionListener(e -> {
-            AppointmentWindow appointmentWindow = new AppointmentWindow();
-            new AppointmentController(appointmentWindow, currentUser);
+        view.getMakeAppointmentButton().addActionListener(e -> openAppointmentWindow());
+        view.getBackButton().addActionListener(e -> goBack());
+    }
+
+    private void openAppointmentWindow() {
+        try {
+            List<MasterModel> masters = MasterModel.getAllMasters();
+            for (MasterModel master : masters) {
+                master.loadScheduleFromDatabase(); // Эта строка критически важна
+            }
+
+            AppointmentWindow appointmentWindow = new AppointmentWindow(masters);
+            new AppointmentController(appointmentWindow, currentUser, appointmentDao);
             view.close();
             appointmentWindow.setVisible(true);
-        });
-        view.getBackButton().addActionListener(e -> goBack());
+        } catch (Exception e) {
+            view.showError("Ошибка при открытии окна записи: " + e.getMessage());
+        }
     }
 
     private void chooseMaster() {
@@ -59,10 +71,6 @@ public class ClientController {
         MasterSelectionWindow masterSelectionView = new MasterSelectionWindow();
         new MasterSelectionController(masterSelectionView, currentUser);
         masterSelectionView.setVisible(true);
-    }
-
-    private void chooseDateTime() {
-        view.showMessage("Выберите удобное время для " + currentUser.getName());
     }
 
     private void goBack() {

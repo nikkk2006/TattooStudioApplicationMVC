@@ -30,19 +30,32 @@ public class MasterModel {
         this.workDao = new WorkDao();
     }
 
+    public void loadScheduleFromDatabase() {
+        this.schedule = new ArrayList<>();
+        String sql = "SELECT date, start_time, end_time, is_available FROM schedule WHERE user_id = " + this.id;
+
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                ScheduleSlot slot = new ScheduleSlot(
+                        rs.getString("date"),
+                        rs.getString("start_time"),
+                        rs.getString("end_time"),
+                        rs.getBoolean("is_available")
+                );
+                this.schedule.add(slot);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при загрузке расписания: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     public void loadWorksFromDatabase() {
         this.works = workDao.getWorksByMaster(this.id);
-    }
-
-    public void loadAppointmentsFromDatabase() {
-        // Реализуйте этот метод, когда добавите AppointmentDao
-        // this.appointments = appointmentDao.getByMasterId(this.id);
-    }
-
-    public void loadScheduleFromDatabase() {
-        // Реализуйте этот метод, когда добавите ScheduleDao
-        // this.schedule = scheduleDao.getByMasterId(this.id);
     }
 
     public boolean addWorkToDatabase(String title, String description, int price, String imagePath) {
