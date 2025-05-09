@@ -48,7 +48,11 @@ public class LoginController {
         switch (user.getRole().toUpperCase()) {
             case "CLIENT":
                 ClientWindow clientView = new ClientWindow(user);
-                new ClientController(clientView, user);
+                // Инициализируем DAO для ClientController
+                AppointmentDao appointmentDao = new AppointmentDao();
+                UserDao clientUserDao = new UserDao();
+                ScheduleDao scheduleDao = new ScheduleDao();
+                new ClientController(clientView, user, appointmentDao, clientUserDao, scheduleDao);
                 clientView.setVisible(true);
                 break;
 
@@ -58,16 +62,16 @@ public class LoginController {
 
                 // Инициализируем DAO
                 WorkDao workDao = new WorkDao();
-                ScheduleDao scheduleDao = new ScheduleDao();
-                AppointmentDao appointmentDao = new AppointmentDao();
+                ScheduleDao masterScheduleDao = new ScheduleDao();
+                AppointmentDao masterAppointmentDao = new AppointmentDao();
 
                 new MasterController(
                         masterView,
                         loginView,
                         user,
                         workDao,
-                        scheduleDao,
-                        appointmentDao
+                        masterScheduleDao,
+                        masterAppointmentDao
                 );
                 masterView.setVisible(true);
                 break;

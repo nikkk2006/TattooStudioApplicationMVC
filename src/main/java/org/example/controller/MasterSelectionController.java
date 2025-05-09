@@ -1,5 +1,8 @@
 package org.example.controller;
 
+import org.example.database.AppointmentDao;
+import org.example.database.UserDao;
+import org.example.database.ScheduleDao;
 import org.example.model.MasterModel;
 import org.example.model.User;
 import org.example.view.ClientWindow;
@@ -20,18 +23,6 @@ public class MasterSelectionController {
 
     private void setupListeners() {
         view.getBackButton().addActionListener(e -> returnToClientWindow());
-
-        view.addMasterSelectionListener(new MasterSelectionWindow.MasterSelectionListener() {
-            @Override
-            public void onMasterSelected(MasterModel master) {
-                System.out.println("Выбран мастер: " + master.getMasterName());
-                System.out.println("Специализация: " + master.getSpecialization());
-                System.out.println("Количество работ: " + master.getWorks().size());
-
-                // Здесь можно открыть детальное окно мастера
-                // new MasterDetailsController(master, user);
-            }
-        });
     }
 
     private void loadAndDisplayMasters() {
@@ -41,7 +32,11 @@ public class MasterSelectionController {
 
     private void returnToClientWindow() {
         ClientWindow clientView = new ClientWindow(user);
-        new ClientController(clientView, user);
+        // Инициализируем DAO для ClientController
+        AppointmentDao appointmentDao = new AppointmentDao();
+        UserDao userDao = new UserDao();
+        ScheduleDao scheduleDao = new ScheduleDao();
+        new ClientController(clientView, user, appointmentDao, userDao, scheduleDao);
         view.dispose();
         clientView.setVisible(true);
     }

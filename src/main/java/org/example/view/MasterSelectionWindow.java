@@ -58,15 +58,20 @@ public class MasterSelectionWindow extends JFrame {
         scrollPane.getViewport().setBackground(UIConstants.SECONDARY_BACKGROUND);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Кнопка "Назад"
+        // Панель для кнопки "Назад" внизу
+        JPanel bottomPanel = new JPanel(new GridBagLayout());
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
         backButton = createButton("Назад");
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(
-                0, 0, UIConstants.BUTTON_PANEL_PADDING.bottom, 0
-        ));
-        buttonPanel.add(backButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        bottomPanel.add(backButton, gbc);
+
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
     }
@@ -82,6 +87,17 @@ public class MasterSelectionWindow extends JFrame {
                 UIConstants.BUTTON_WIDTH,
                 UIConstants.BUTTON_HEIGHT
         ));
+
+        // Добавляем эффект при наведении
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(UIConstants.BUTTON_HOVER_COLOR);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(UIConstants.BUTTON_COLOR);
+            }
+        });
+
         return button;
     }
 

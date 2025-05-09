@@ -4,12 +4,12 @@ import org.example.model.User;
 import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+
 import static org.example.utils.UIConstants.*;
 
 public class ClientWindow extends JFrame {
     private JButton chooseMasterButton;
-    private JButton viewPortfolioButton;
-    private JButton chooseDateTimeButton;
     private JButton makeAppointmentButton;
     private JButton backButton;
     private User user; // Добавляем поле для хранения пользователя
@@ -26,6 +26,9 @@ public class ClientWindow extends JFrame {
     public ClientWindow(String clientName) {
         initComponents(clientName);
         setupFrame();
+    }
+    public void addBookAppointmentListener(ActionListener listener) {
+        makeAppointmentButton.addActionListener(listener);
     }
 
     private void initComponents(String clientName) {
@@ -55,14 +58,10 @@ public class ClientWindow extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
 
         chooseMasterButton = createStyledButton("Выбрать мастера");
-        viewPortfolioButton = createStyledButton("Посмотреть работы");
-        chooseDateTimeButton = createStyledButton("Выбрать дату и время");
         makeAppointmentButton = createStyledButton("Записаться");
         backButton = createStyledButton("Назад");
 
         panel.add(chooseMasterButton);
-        panel.add(viewPortfolioButton);
-        panel.add(chooseDateTimeButton);
         panel.add(makeAppointmentButton);
         panel.add(backButton);
 
@@ -102,8 +101,6 @@ public class ClientWindow extends JFrame {
 
     // Геттеры для кнопок
     public JButton getChooseMasterButton() { return chooseMasterButton; }
-    public JButton getViewPortfolioButton() { return viewPortfolioButton; }
-    public JButton getChooseDateTimeButton() { return chooseDateTimeButton; }
     public JButton getMakeAppointmentButton() { return makeAppointmentButton; }
     public JButton getBackButton() { return backButton; }
 

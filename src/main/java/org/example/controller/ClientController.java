@@ -1,71 +1,72 @@
 package org.example.controller;
 
+import org.example.database.AppointmentDao;
+import org.example.database.UserDao;
+import org.example.database.ScheduleDao;
+import org.example.model.AppointmentModel;
 import org.example.model.ClientModel;
 import org.example.model.User;
+import org.example.view.AppointmentWindow;
 import org.example.view.ClientWindow;
 import org.example.view.MainWindow;
 import org.example.view.MasterSelectionWindow;
 
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 public class ClientController {
     private ClientModel model;
     private ClientWindow view;
-    private User currentUser;  // Добавляем текущего пользователя
+    private User currentUser;
+    private AppointmentDao appointmentDao;
+    private UserDao userDao;
+    private ScheduleDao scheduleDao;
+    private Map<String, Integer> mastersMap; // Хранит соответствие имени мастера и его ID
 
-    // Основной конструктор
-    public ClientController(ClientWindow view, User user) {
+    public ClientController(ClientWindow view, User user,
+                            AppointmentDao appointmentDao, UserDao userDao, ScheduleDao scheduleDao) {
         this.view = view;
         this.currentUser = user;
-        this.model = new ClientModel(user);  // Инициализируем модель с пользователем
+        this.model = new ClientModel(user);
+        this.appointmentDao = appointmentDao;
+        this.userDao = userDao;
+        this.scheduleDao = scheduleDao;
+        this.mastersMap = new HashMap<>();
 
         setupListeners();
     }
 
-    // Старый конструктор (можно оставить для совместимости или удалить)
     @Deprecated
     public ClientController(ClientModel model, ClientWindow view, MainWindow mainWindow) {
-        this.model = model;
-        this.view = view;
-        this.currentUser = model.getUser();  // Предполагая, что модель хранит пользователя
-        setupListeners();
+        this(view, model.getUser(), new AppointmentDao(), new UserDao(), new ScheduleDao());
     }
 
     private void setupListeners() {
         view.getChooseMasterButton().addActionListener(e -> chooseMaster());
-        view.getViewPortfolioButton().addActionListener(e -> viewPortfolio());
-        view.getChooseDateTimeButton().addActionListener(e -> chooseDateTime());
-        view.getMakeAppointmentButton().addActionListener(e -> makeAppointment());
+        view.getMakeAppointmentButton().addActionListener(e -> {
+            AppointmentWindow appointmentWindow = new AppointmentWindow();
+            new AppointmentController(appointmentWindow);
+            view.close();
+            appointmentWindow.setVisible(true);
+        });
         view.getBackButton().addActionListener(e -> goBack());
     }
 
     private void chooseMaster() {
-//        model.chooseMaster();
-//        view.showMessage(currentUser.getName() + ", выберите мастера");
         view.close();
-
         MasterSelectionWindow masterSelectionView = new MasterSelectionWindow();
         new MasterSelectionController(masterSelectionView, currentUser);
         masterSelectionView.setVisible(true);
-    }
-
-    private void viewPortfolio() {
-        model.viewPortfolio();
-        view.showMessage("Портфолио доступных мастеров");
     }
 
     private void chooseDateTime() {
         view.showMessage("Выберите удобное время для " + currentUser.getName());
     }
 
-    private void makeAppointment() {
-        if (model.makeAppointment()) {
-            view.showSuccess("Запись успешно создана для " + currentUser.getName());
-        } else {
-            view.showError("Ошибка при создании записи");
-        }
-    }
-
     private void goBack() {
         view.dispose();
-        new MainWindow().setVisible(true);  // Создаем новое главное окно
+        new MainWindow().setVisible(true);
     }
 }

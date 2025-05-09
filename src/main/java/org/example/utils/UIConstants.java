@@ -10,6 +10,7 @@ public class UIConstants {
      */
     public static final String APP_TITLE = "Тату Салон";
     public static final String STUDIO_NAME = "BLACK INK";
+    public static final String APPOINTMENT = "APPOINTMENT";
 
     /*
      * Цветовая палитра:
