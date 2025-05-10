@@ -1,10 +1,9 @@
 package org.example.utils;
+
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Кастомная панель с градиентным фоном
- */
+
 public class GradientPanel extends JPanel {
     private final Color color1;
     private final Color color2;

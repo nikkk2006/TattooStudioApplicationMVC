@@ -6,7 +6,6 @@ import org.example.model.AppointmentModel;
 import org.example.model.MasterModel;
 import org.example.utils.GradientPanel;
 import org.example.utils.UIConstants;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -20,10 +19,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+
 public class AppointmentWindow extends JFrame {
     private JLabel titleLabel;
     private JButton backButton;
-    private JButton refreshButton;
     private JButton bookButton;
     private JTable scheduleTable;
     private List<MasterModel> masters;
@@ -116,16 +115,12 @@ public class AppointmentWindow extends JFrame {
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        refreshButton = createButton("Обновить");
-        refreshButton.addActionListener(e -> loadSchedules());
-
         bookButton = createButton("Записаться");
         bookButton.addActionListener(new BookButtonListener());
 
         backButton = createButton("Назад");
 
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(refreshButton);
         bottomPanel.add(Box.createHorizontalStrut(20));
         bottomPanel.add(bookButton);
         bottomPanel.add(Box.createHorizontalStrut(20));
@@ -341,9 +336,5 @@ public class AppointmentWindow extends JFrame {
 
     public JButton getBackButton() {
         return backButton;
-    }
-
-    public JButton getRefreshButton() {
-        return refreshButton;
     }
 }

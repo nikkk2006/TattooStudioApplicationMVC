@@ -1,7 +1,5 @@
-// AppointmentModel.java
 package org.example.model;
 
-import java.sql.Timestamp;
 
 public class AppointmentModel {
     private int id;
@@ -9,7 +7,6 @@ public class AppointmentModel {
     private int masterId;
     private int scheduleId;
     private String status;
-    private Timestamp createdAt;
 
     // Геттеры и сеттеры
     public int getId() { return id; }
@@ -22,6 +19,4 @@ public class AppointmentModel {
     public void setScheduleId(int scheduleId) { this.scheduleId = scheduleId; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 }

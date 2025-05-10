@@ -10,6 +10,7 @@ import org.example.view.MasterWindow;
 import org.example.database.UserDao;
 import org.example.model.User;
 
+
 public class RegisterController {
     private final RegisterWindow view;
     private final UserDao userDao;

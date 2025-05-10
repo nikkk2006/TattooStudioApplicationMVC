@@ -1,9 +1,12 @@
 package org.example.controller;
 
 import org.example.database.AppointmentDao;
+import org.example.database.ScheduleDao;
+import org.example.database.UserDao;
 import org.example.model.User;
 import org.example.view.AppointmentWindow;
 import org.example.view.ClientWindow;
+
 
 public class AppointmentController {
     private AppointmentWindow view;
@@ -20,17 +23,14 @@ public class AppointmentController {
 
     private void setupListeners() {
         view.getBackButton().addActionListener(e -> goBack());
-        view.getRefreshButton().addActionListener(e -> refreshSchedule());
-    }
-
-    private void refreshSchedule() {
-        // Здесь можно добавить логику обновления расписания
-        // Например, перезагрузить данные из базы
     }
 
     private void goBack() {
         view.close();
-        // Возвращаемся к предыдущему окну
-        new ClientWindow(currentUser).setVisible(true);
+        ClientWindow clientWindowView = new ClientWindow(currentUser);
+        UserDao userDao = new UserDao();
+        ScheduleDao scheduleDao = new ScheduleDao();
+        new ClientController(clientWindowView, currentUser, appointmentDao, userDao, scheduleDao);
+        clientWindowView.setVisible(true);
     }
 }

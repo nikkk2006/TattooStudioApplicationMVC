@@ -5,6 +5,7 @@ import org.example.utils.UIConstants;
 import javax.swing.*;
 import java.awt.*;
 
+
 public class LoginWindow extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;

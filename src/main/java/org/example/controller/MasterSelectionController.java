@@ -7,8 +7,8 @@ import org.example.model.MasterModel;
 import org.example.model.User;
 import org.example.view.ClientWindow;
 import org.example.view.MasterSelectionWindow;
-
 import java.util.List;
+
 
 public class MasterSelectionController {
     private MasterSelectionWindow view;

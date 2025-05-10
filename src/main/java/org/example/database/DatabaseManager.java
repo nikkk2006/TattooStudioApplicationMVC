@@ -2,6 +2,7 @@ package org.example.database;
 
 import java.sql.*;
 
+
 public class DatabaseManager {
     private static final String DB_URL = "jdbc:sqlite:TattooStudio.db";
 

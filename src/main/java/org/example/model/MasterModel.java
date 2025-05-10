@@ -2,14 +2,13 @@ package org.example.model;
 
 import org.example.database.DatabaseManager;
 import org.example.database.WorkDao;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class MasterModel {
     private int id;
@@ -59,15 +58,6 @@ public class MasterModel {
         this.works = workDao.getWorksByMaster(this.id);
     }
 
-    public boolean addWorkToDatabase(String title, String description, int price, String imagePath) {
-        Work work = new Work(title, description, price, imagePath);
-        boolean success = workDao.createWork(this.id, work, imagePath);
-        if (success) {
-            loadWorksFromDatabase();
-        }
-        return success;
-    }
-
     public static class Work {
         private String title;
         private String description;
@@ -89,8 +79,6 @@ public class MasterModel {
         public String getTitle() { return title; }
         public String getDescription() { return description; }
         public int getPrice() { return price; }
-        public String getImagePath() { return imagePath; }
-        public void setImagePath(String imagePath) { this.imagePath = imagePath; }
     }
 
     public static class Appointment {
@@ -105,12 +93,6 @@ public class MasterModel {
             this.time = time;
             this.workTitle = workTitle;
         }
-
-        // Геттеры
-        public String getClientName() { return clientName; }
-        public String getDate() { return date; }
-        public String getTime() { return time; }
-        public String getWorkTitle() { return workTitle; }
     }
 
     public static class ScheduleSlot {
@@ -133,26 +115,13 @@ public class MasterModel {
         public String getStartTime() { return startTime; }
         public String getEndTime() { return endTime; }
         public boolean isAvailable() { return isAvailable; }
-        public void setAvailable(boolean available) { isAvailable = available; }
         public int getId() { return id; }
     }
 
     // Геттеры
     public int getId() { return id; }
     public String getMasterName() { return masterName; }
-    public String getSpecialization() { return specialization; }
-    public List<Work> getWorks() { return works; }
-    public List<Appointment> getAppointments() { return appointments; }
     public List<ScheduleSlot> getSchedule() { return schedule; }
-
-    // Методы для работы с расписанием
-    public boolean isAvailable(String date, String time) {
-        return schedule.stream()
-                .anyMatch(slot -> slot.getDate().equals(date) &&
-                        slot.getStartTime().compareTo(time) <= 0 &&
-                        slot.getEndTime().compareTo(time) >= 0 &&
-                        slot.isAvailable());
-    }
 
     // Метод для загрузки всех мастеров
     public static List<MasterModel> getAllMasters() {

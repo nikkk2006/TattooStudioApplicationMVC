@@ -5,13 +5,13 @@ import org.example.database.ScheduleDao;
 import org.example.model.ScheduleModel;
 import org.example.utils.UIConstants;
 import org.example.utils.GradientPanel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+
 
 public class MasterScheduleWindow extends JFrame {
     private final MasterController controller;
@@ -163,42 +163,5 @@ public class MasterScheduleWindow extends JFrame {
                     "Ошибка", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-    }
-    private void showSuccessMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "Успех", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void clearForm() {
-        dateField.setText("");
-        startTimeField.setText("");
-        endTimeField.setText("");
-    }
-
-    private ScheduleModel validateAndCreateSchedule() throws DateTimeParseException {
-        LocalDate date = LocalDate.parse(dateField.getText());
-        LocalTime startTime = LocalTime.parse(startTimeField.getText());
-        LocalTime endTime = LocalTime.parse(endTimeField.getText());
-
-        if (!endTime.isAfter(startTime)) {
-            showError("Время окончания должно быть позже времени начала");
-            return null;
-        }
-
-        ScheduleModel schedule = new ScheduleModel();
-        schedule.setMasterId(masterId);
-        schedule.setDate(date);
-        schedule.setStartTime(startTime);
-        schedule.setEndTime(endTime);
-        schedule.setAvailable(true);
-
-        return schedule;
-    }
-
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
-    public void showError(String errorMessage) {
-        JOptionPane.showMessageDialog(this, errorMessage, "Ошибка", JOptionPane.ERROR_MESSAGE);
     }
 }

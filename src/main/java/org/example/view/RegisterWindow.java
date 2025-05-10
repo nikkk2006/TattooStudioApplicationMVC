@@ -3,8 +3,8 @@ package org.example.view;
 import org.example.utils.GradientPanel;
 import org.example.utils.UIConstants;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
+
 
 public class RegisterWindow extends JFrame {
     private JTextField nameField;

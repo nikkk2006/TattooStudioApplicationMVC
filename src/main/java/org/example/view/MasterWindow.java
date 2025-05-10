@@ -1,12 +1,11 @@
 package org.example.view;
 
-
-import org.example.model.MasterModel;
 import org.example.model.User;
 import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
 import static org.example.utils.UIConstants.*;
+
 
 public class MasterWindow extends JFrame {
     private JButton addWorkButton;
@@ -87,13 +86,6 @@ public class MasterWindow extends JFrame {
 
     // Геттеры для кнопок
     public JButton getAddWorkButton() { return addWorkButton; }
-    public JButton getViewWorksButton() { return viewWorksButton; }
     public JButton getViewScheduleButton() { return viewScheduleButton; }
-    public JButton getViewAppointmentsButton() { return viewAppointmentsButton; }
     public JButton getLogoutButton() { return logoutButton; }
-
-
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
 }

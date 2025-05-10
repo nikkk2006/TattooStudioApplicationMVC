@@ -2,13 +2,10 @@ package org.example.view;
 
 import org.example.utils.UIConstants;
 import org.example.utils.GradientPanel;
-
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Представление для добавления работ мастера
- */
+
 public class WorkView extends JFrame {
     private JTextField titleField;
     private JTextArea descriptionArea;

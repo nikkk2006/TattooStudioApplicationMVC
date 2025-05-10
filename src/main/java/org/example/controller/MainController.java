@@ -4,6 +4,7 @@ import org.example.view.MainWindow;
 import org.example.view.LoginWindow;
 import org.example.view.RegisterWindow;
 
+
 public class MainController {
     private final MainWindow view;
 

@@ -5,8 +5,8 @@ import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-
 import static org.example.utils.UIConstants.*;
+
 
 public class ClientWindow extends JFrame {
     private JButton chooseMasterButton;
@@ -26,9 +26,6 @@ public class ClientWindow extends JFrame {
     public ClientWindow(String clientName) {
         initComponents(clientName);
         setupFrame();
-    }
-    public void addBookAppointmentListener(ActionListener listener) {
-        makeAppointmentButton.addActionListener(listener);
     }
 
     private void initComponents(String clientName) {
@@ -106,18 +103,6 @@ public class ClientWindow extends JFrame {
 
     // Геттер для пользователя
     public User getUser() { return user; }
-
-    // Методы для работы с UI
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
-    public void showError(String errorMessage) {
-        JOptionPane.showMessageDialog(this, errorMessage, "Ошибка", JOptionPane.ERROR_MESSAGE);
-    }
-    public void showSuccess(String message) {
-        JOptionPane.showMessageDialog(this, message, "Успех", JOptionPane.INFORMATION_MESSAGE);
-    }
 
     public void close() {
         dispose();

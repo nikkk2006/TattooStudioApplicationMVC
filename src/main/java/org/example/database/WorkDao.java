@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class WorkDao {
     private static final String CREATE_WORK_SQL =
             "INSERT INTO works(user_id, title, description, price, image_path) VALUES(?, ?, ?, ?, ?)";
@@ -53,34 +54,5 @@ public class WorkDao {
             System.err.println("Ошибка при получении работ: " + e.getMessage());
         }
         return works;
-    }
-
-    public boolean deleteWork(int workId, int masterId) {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(DELETE_WORK_SQL)) {
-
-            pstmt.setInt(1, workId);
-            pstmt.setInt(2, masterId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Ошибка при удалении работы: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean updateWork(int workId, Work updatedWork, String savedImagePath) {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(UPDATE_WORK_SQL)) {
-
-            pstmt.setString(1, updatedWork.getTitle());
-            pstmt.setString(2, updatedWork.getDescription());
-            pstmt.setInt(3, updatedWork.getPrice());
-            pstmt.setString(4, savedImagePath);
-            pstmt.setInt(5, workId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Ошибка при обновлении работы: " + e.getMessage());
-            return false;
-        }
     }
 }

@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
+
 public class ImageUtils {
     public static ImageIcon createScaledIcon(String imagePath, int width, int height) {
         try {

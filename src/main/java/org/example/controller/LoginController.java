@@ -4,6 +4,7 @@ import org.example.view.*;
 import org.example.database.*;
 import org.example.model.User;
 
+
 public class LoginController {
     private final LoginWindow view;
     private final UserDao userDao;

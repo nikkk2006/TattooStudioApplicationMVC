@@ -3,7 +3,6 @@ package org.example.controller;
 import org.example.database.AppointmentDao;
 import org.example.database.UserDao;
 import org.example.database.ScheduleDao;
-import org.example.model.AppointmentModel;
 import org.example.model.ClientModel;
 import org.example.model.MasterModel;
 import org.example.model.User;
@@ -11,11 +10,10 @@ import org.example.view.AppointmentWindow;
 import org.example.view.ClientWindow;
 import org.example.view.MainWindow;
 import org.example.view.MasterSelectionWindow;
-
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+
 
 public class ClientController {
     private ClientModel model;
@@ -51,19 +49,17 @@ public class ClientController {
     }
 
     private void openAppointmentWindow() {
-        try {
-            List<MasterModel> masters = MasterModel.getAllMasters();
-            for (MasterModel master : masters) {
-                master.loadScheduleFromDatabase(); // Эта строка критически важна
-            }
-
-            AppointmentWindow appointmentWindow = new AppointmentWindow(masters, currentUser.getId());
-            new AppointmentController(appointmentWindow, currentUser, appointmentDao);
-            view.close();
-            appointmentWindow.setVisible(true);
-        } catch (Exception e) {
-            view.showError("Ошибка при открытии окна записи: " + e.getMessage());
+        view.close();
+        List<MasterModel> masters = MasterModel.getAllMasters();
+        for (MasterModel master : masters) {
+            master.loadScheduleFromDatabase(); // Эта строка критически важна
         }
+
+        AppointmentWindow appointmentWindow = new AppointmentWindow(masters, currentUser.getId());
+        new AppointmentController(appointmentWindow, currentUser, appointmentDao);
+
+        appointmentWindow.setVisible(true);
+
     }
 
     private void chooseMaster() {
@@ -74,7 +70,9 @@ public class ClientController {
     }
 
     private void goBack() {
-        view.dispose();
-        new MainWindow().setVisible(true);
+        view.close();
+        MainWindow mainWindowView = new MainWindow();
+        new MainController(mainWindowView);
+        mainWindowView.setVisible(true);
     }
 }

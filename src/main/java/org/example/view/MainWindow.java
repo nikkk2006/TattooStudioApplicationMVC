@@ -2,13 +2,10 @@ package org.example.view;
 
 import org.example.utils.UIConstants;
 import org.example.utils.GradientPanel;
-
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Чистое представление главного окна (отвечает только за UI)
- */
+
 public class MainWindow extends JFrame {
     private JButton loginButton;
     private JButton registerButton;

@@ -1,19 +1,12 @@
 package org.example.controller;
 
 import org.example.model.MasterModel;
-import org.example.model.ScheduleModel;
 import org.example.model.User;
-import org.example.view.MasterScheduleWindow;
-import org.example.view.MasterWindow;
-import org.example.view.LoginWindow;
-import org.example.view.WorkView;
+import org.example.view.*;
 import org.example.database.WorkDao;
 import org.example.database.ScheduleDao;
 import org.example.database.AppointmentDao;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MasterController {
     private final MasterModel model;
@@ -45,38 +38,16 @@ public class MasterController {
         this.model = new MasterModel(user.getId(), user.getName(), "Мастер");
         initController();
     }
-    public boolean addScheduleSlot(ScheduleModel schedule) {
-        try {
-            ScheduleDao.addScheduleSlot(schedule);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public List<ScheduleModel> getMasterSchedule(int masterId) {
-        try {
-            return ScheduleDao.getMasterSchedule(masterId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
 
     // Остальные методы остаются без изменений
     private void initController() {
         setupListeners();
-        loadInitialData();
     }
 
     private void setupListeners() {
         view.getViewScheduleButton().addActionListener(e -> handleViewSchedule());
-        view.getLogoutButton().addActionListener(e -> handleLogout());
+        view.getLogoutButton().addActionListener(e -> returnToMain());
         view.getAddWorkButton().addActionListener(e -> handleAddWork());
-    }
-
-    private void loadInitialData() {
-        // Загрузка начальных данных
     }
 
     private void handleAddWork() {
@@ -87,14 +58,15 @@ public class MasterController {
     }
 
     private void handleViewSchedule() {
-        // Создаем окно расписания и передаем текущий controller и ID мастера
         MasterScheduleWindow scheduleWindow = new MasterScheduleWindow(this, model.getId());
         scheduleWindow.setLocationRelativeTo(view);
         scheduleWindow.setVisible(true);
     }
 
-    private void handleLogout() {
+    private void returnToMain() {
         view.dispose();
-        loginView.setVisible(true);
+        MainWindow mainView = new MainWindow();
+        new MainController(mainView);
+        mainView.setVisible(true);
     }
 }

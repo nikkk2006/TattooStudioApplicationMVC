@@ -3,10 +3,10 @@ package org.example.view;
 import org.example.model.MasterModel;
 import org.example.utils.UIConstants;
 import org.example.utils.GradientPanel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+
 
 public class MasterSelectionWindow extends JFrame {
     private JButton backButton;
@@ -127,25 +127,6 @@ public class MasterSelectionWindow extends JFrame {
             return this;
         }
     }
-
-    public interface MasterSelectionListener {
-        void onMasterSelected(MasterModel master);
-    }
-
-    private MasterSelectionListener masterSelectionListener;
-
-    public void addMasterSelectionListener(MasterSelectionListener listener) {
-        this.masterSelectionListener = listener;
-        mastersList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && masterSelectionListener != null) {
-                MasterModel selected = mastersList.getSelectedValue();
-                if (selected != null) {
-                    masterSelectionListener.onMasterSelected(selected);
-                }
-            }
-        });
-    }
-
     public JButton getBackButton() {
         return backButton;
     }

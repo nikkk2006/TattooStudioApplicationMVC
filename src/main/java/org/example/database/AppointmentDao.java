@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class AppointmentDao {
     public boolean createAppointment(AppointmentModel appointment) {
         String sql = "INSERT INTO appointments (client_id, master_id, schedule_id, status) VALUES (?, ?, ?, ?)";

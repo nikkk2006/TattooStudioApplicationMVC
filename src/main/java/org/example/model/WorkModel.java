@@ -1,5 +1,6 @@
 package org.example.model;
 
+
 public class WorkModel {
     private int id;
     private int userId;
