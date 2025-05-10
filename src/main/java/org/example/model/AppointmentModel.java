@@ -8,7 +8,6 @@ public class AppointmentModel {
     private int clientId;
     private int masterId;
     private int scheduleId;
-    private String tattooDescription;
     private String status;
     private Timestamp createdAt;
 
@@ -21,8 +20,6 @@ public class AppointmentModel {
     public void setMasterId(int masterId) { this.masterId = masterId; }
     public int getScheduleId() { return scheduleId; }
     public void setScheduleId(int scheduleId) { this.scheduleId = scheduleId; }
-    public String getTattooDescription() { return tattooDescription; }
-    public void setTattooDescription(String tattooDescription) { this.tattooDescription = tattooDescription; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public Timestamp getCreatedAt() { return createdAt; }

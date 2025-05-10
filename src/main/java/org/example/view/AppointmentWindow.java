@@ -1,5 +1,8 @@
 package org.example.view;
 
+import org.example.database.AppointmentDao;
+import org.example.database.DatabaseManager;
+import org.example.model.AppointmentModel;
 import org.example.model.MasterModel;
 import org.example.utils.GradientPanel;
 import org.example.utils.UIConstants;
@@ -7,20 +10,49 @@ import org.example.utils.UIConstants;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class AppointmentWindow extends JFrame {
     private JLabel titleLabel;
     private JButton backButton;
     private JButton refreshButton;
+    private JButton bookButton;
     private JTable scheduleTable;
     private List<MasterModel> masters;
+    private int currentClientId;
+    private Timer refreshTimer;
 
-    public AppointmentWindow(List<MasterModel> masters) {
+    public AppointmentWindow(List<MasterModel> masters, int clientId) {
         this.masters = masters;
+        this.currentClientId = clientId;
+
+        // Обновляем расписание у всех мастеров перед отображением
+        for (MasterModel master : masters) {
+            master.loadScheduleFromDatabase();
+        }
+
         initUI();
         setupLayout();
         loadSchedules();
+
+        // Таймер автообновления каждые 30 секунд
+        refreshTimer = new Timer(30000, e -> loadSchedules());
+        refreshTimer.start();
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                refreshTimer.stop();
+            }
+        });
     }
 
     private void setupLayout() {
@@ -30,7 +62,7 @@ public class AppointmentWindow extends JFrame {
         );
         mainPanel.setLayout(new BorderLayout());
 
-        // Заголовок вверху
+        // Заголовок
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setOpaque(false);
         titleLabel = new JLabel(UIConstants.APPOINTMENT);
@@ -41,12 +73,11 @@ public class AppointmentWindow extends JFrame {
 
         mainPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Центральная панель с таблицей
+        // Таблица с расписанием
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
         centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // Создаем модель таблицы
         DefaultTableModel tableModel = new DefaultTableModel(
                 new Object[]{"Мастер", "Дата", "Начало", "Конец", "Доступно"}, 0) {
             @Override
@@ -79,7 +110,7 @@ public class AppointmentWindow extends JFrame {
         centerPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Панель с кнопками внизу
+        // Панель кнопок
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
@@ -88,11 +119,15 @@ public class AppointmentWindow extends JFrame {
         refreshButton = createButton("Обновить");
         refreshButton.addActionListener(e -> loadSchedules());
 
+        bookButton = createButton("Записаться");
+        bookButton.addActionListener(new BookButtonListener());
+
         backButton = createButton("Назад");
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(refreshButton);
+        bottomPanel.add(Box.createHorizontalStrut(20));
+        bottomPanel.add(bookButton);
         bottomPanel.add(Box.createHorizontalStrut(20));
         bottomPanel.add(backButton);
         bottomPanel.add(Box.createHorizontalGlue());
@@ -102,34 +137,160 @@ public class AppointmentWindow extends JFrame {
         add(mainPanel);
     }
 
-    // Метод для загрузки расписания мастеров
-    private void loadSchedules() {
-        clearTable();
+    private class BookButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = scheduleTable.getSelectedRow();
+            if (selectedRow == -1) {
+                showError("Пожалуйста, выберите время для записи");
+                return;
+            }
 
-        if (masters == null) {
-            return;
+            boolean isAvailable = (boolean) scheduleTable.getValueAt(selectedRow, 4);
+            if (!isAvailable) {
+                showError("Выбранное время уже занято");
+                return;
+            }
+
+            String masterName = (String) scheduleTable.getValueAt(selectedRow, 0);
+            String date = (String) scheduleTable.getValueAt(selectedRow, 1);
+            String startTime = (String) scheduleTable.getValueAt(selectedRow, 2);
+            String endTime = (String) scheduleTable.getValueAt(selectedRow, 3);
+
+            MasterModel selectedMaster = findMasterByName(masterName);
+            if (selectedMaster == null) {
+                showError("Ошибка при поиске мастера");
+                return;
+            }
+
+            MasterModel.ScheduleSlot selectedSlot = findScheduleSlot(selectedMaster, date, startTime, endTime);
+            if (selectedSlot == null) {
+                showError("Ошибка при поиске времени записи");
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(
+                    AppointmentWindow.this,
+                    String.format("Вы хотите записаться к мастеру %s на %s с %s до %s?",
+                            masterName, date, startTime, endTime),
+                    "Подтверждение записи",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                createAppointment(selectedMaster, selectedSlot);
+            }
         }
 
-        for (MasterModel master : masters) {
+        private void createAppointment(MasterModel master, MasterModel.ScheduleSlot slot) {
+            try {
+                // Проверяем доступность слота в БД (дополнительная защита)
+                if (!isSlotAvailableInDB(slot.getId())) {
+                    showError("Это время уже занято другим клиентом");
+                    loadSchedules(); // Обновляем таблицу
+                    return;
+                }
 
-            if (master.getSchedule().isEmpty()) {
+                AppointmentModel appointment = new AppointmentModel();
+                appointment.setClientId(currentClientId);
+                appointment.setMasterId(master.getId());
+                appointment.setScheduleId(slot.getId());
+                appointment.setStatus("pending"); // Исправленный статус
+
+                AppointmentDao appointmentDao = new AppointmentDao();
+                boolean success = appointmentDao.createAppointment(appointment);
+
+                if (success) {
+                    markSlotAsBooked(slot.getId());
+                    JOptionPane.showMessageDialog(
+                            AppointmentWindow.this,
+                            "Вы успешно записаны!",
+                            "Успех",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                    loadSchedules();
+                } else {
+                    showError("Ошибка при записи");
+                }
+            } catch (Exception ex) {
+                showError("Произошла ошибка: " + ex.getMessage());
+            }
+        }
+
+        private boolean isSlotAvailableInDB(int scheduleId) {
+            String sql = "SELECT is_available FROM schedule WHERE id = ?";
+            try (Connection conn = DatabaseManager.getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, scheduleId);
+                ResultSet rs = pstmt.executeQuery();
+                return rs.next() && rs.getBoolean("is_available");
+            } catch (SQLException e) {
+                System.err.println("Error checking slot availability: " + e.getMessage());
+                return false;
+            }
+        }
+
+        private void markSlotAsBooked(int scheduleId) {
+            String sql = "UPDATE schedule SET is_available = false WHERE id = ?";
+
+            try (Connection conn = DatabaseManager.getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, scheduleId);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.err.println("Error updating slot availability: " + e.getMessage());
+            }
+        }
+    }
+
+    private MasterModel findMasterByName(String masterName) {
+        for (MasterModel master : masters) {
+            if (master.getMasterName().equals(masterName)) {
+                return master;
+            }
+        }
+        return null;
+    }
+
+    private MasterModel.ScheduleSlot findScheduleSlot(MasterModel master, String date, String startTime, String endTime) {
+        for (MasterModel.ScheduleSlot slot : master.getSchedule()) {
+            if (slot.getDate().equals(date) &&
+                    slot.getStartTime().equals(startTime) &&
+                    slot.getEndTime().equals(endTime)) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Ошибка",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    private void loadSchedules() {
+        clearTable();
+        AppointmentDao appointmentDao = new AppointmentDao();
+        List<AppointmentModel> activeAppointments = appointmentDao.getActiveAppointments();
+
+        for (MasterModel master : masters) {
+            master.loadScheduleFromDatabase();
+            for (MasterModel.ScheduleSlot slot : master.getSchedule()) {
+                boolean isBooked = activeAppointments.stream()
+                        .anyMatch(app -> app.getScheduleId() == slot.getId());
+
                 addScheduleRow(
                         master.getMasterName(),
-                        "Нет данных",
-                        "",
-                        "",
-                        false
+                        slot.getDate(),
+                        slot.getStartTime(),
+                        slot.getEndTime(),
+                        slot.isAvailable() && !isBooked
                 );
-            } else {
-                for (MasterModel.ScheduleSlot slot : master.getSchedule()) {
-                    addScheduleRow(
-                            master.getMasterName(),
-                            slot.getDate(),
-                            slot.getStartTime(),
-                            slot.getEndTime(),
-                            slot.isAvailable()
-                    );
-                }
             }
         }
     }

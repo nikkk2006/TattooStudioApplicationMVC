@@ -19,7 +19,6 @@ public class UIConstants {
      * PRIMARY_TEXT_COLOR - основной цвет текста
      */
     public static final Color MAIN_BACKGROUND = new Color(15, 15, 15);
-    public static final Color INPUT_BACKGROUND = new Color(255, 255, 255, 150);
     public static final Color SECONDARY_BACKGROUND = new Color(57, 57, 66);
     public static final Color PRIMARY_TEXT_COLOR = new Color(220, 220, 220);
 

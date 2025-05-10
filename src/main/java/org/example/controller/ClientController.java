@@ -57,7 +57,7 @@ public class ClientController {
                 master.loadScheduleFromDatabase(); // Эта строка критически важна
             }
 
-            AppointmentWindow appointmentWindow = new AppointmentWindow(masters);
+            AppointmentWindow appointmentWindow = new AppointmentWindow(masters, currentUser.getId());
             new AppointmentController(appointmentWindow, currentUser, appointmentDao);
             view.close();
             appointmentWindow.setVisible(true);

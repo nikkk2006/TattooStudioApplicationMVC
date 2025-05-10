@@ -32,7 +32,7 @@ public class MasterModel {
 
     public void loadScheduleFromDatabase() {
         this.schedule = new ArrayList<>();
-        String sql = "SELECT date, start_time, end_time, is_available FROM schedule WHERE user_id = " + this.id;
+        String sql = "SELECT id, date, start_time, end_time, is_available FROM schedule WHERE user_id = " + this.id;
 
         try (Connection conn = DatabaseManager.getConnection();
              Statement stmt = conn.createStatement();
@@ -40,6 +40,7 @@ public class MasterModel {
 
             while (rs.next()) {
                 ScheduleSlot slot = new ScheduleSlot(
+                        rs.getInt("id"),  // Получаем id из БД
                         rs.getString("date"),
                         rs.getString("start_time"),
                         rs.getString("end_time"),
@@ -113,12 +114,14 @@ public class MasterModel {
     }
 
     public static class ScheduleSlot {
+        private int id;
         private String date;
         private String startTime;
         private String endTime;
         private boolean isAvailable;
 
-        public ScheduleSlot(String date, String startTime, String endTime, boolean isAvailable) {
+        public ScheduleSlot(int id, String date, String startTime, String endTime, boolean isAvailable) {
+            this.id = id;
             this.date = date;
             this.startTime = startTime;
             this.endTime = endTime;
@@ -131,6 +134,7 @@ public class MasterModel {
         public String getEndTime() { return endTime; }
         public boolean isAvailable() { return isAvailable; }
         public void setAvailable(boolean available) { isAvailable = available; }
+        public int getId() { return id; }
     }
 
     // Геттеры

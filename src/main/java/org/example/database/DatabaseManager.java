@@ -50,9 +50,7 @@ public class DatabaseManager {
                     "client_id INTEGER NOT NULL," + // ID пользователя с ролью client
                     "master_id INTEGER NOT NULL," + // ID пользователя с ролью master
                     "schedule_id INTEGER NOT NULL," +
-                    "tattoo_description TEXT," +
                     "status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled'))," +
-                    "created_at DATETIME DEFAULT CURRENT_TIMESTAMP," +
                     "FOREIGN KEY (client_id) REFERENCES users(id)," +
                     "FOREIGN KEY (master_id) REFERENCES users(id)," +
                     "FOREIGN KEY (schedule_id) REFERENCES schedule(id))";
