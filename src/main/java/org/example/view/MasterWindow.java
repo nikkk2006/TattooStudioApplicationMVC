@@ -9,7 +9,6 @@ import static org.example.utils.UIConstants.*;
 
 public class MasterWindow extends JFrame {
     private JButton addWorkButton;
-    private JButton viewWorksButton;
     private JButton viewScheduleButton;
     private JButton viewAppointmentsButton;
     private JButton logoutButton;
@@ -47,13 +46,11 @@ public class MasterWindow extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
 
         addWorkButton = createStyledButton("Добавить работу");
-        viewWorksButton = createStyledButton("Мои работы");
         viewScheduleButton = createStyledButton("Расписание");
         viewAppointmentsButton = createStyledButton("Записи клиентов");
         logoutButton = createStyledButton("Выйти");
 
         panel.add(addWorkButton);
-        panel.add(viewWorksButton);
         panel.add(viewScheduleButton);
         panel.add(viewAppointmentsButton);
         panel.add(logoutButton);
@@ -88,4 +85,5 @@ public class MasterWindow extends JFrame {
     public JButton getAddWorkButton() { return addWorkButton; }
     public JButton getViewScheduleButton() { return viewScheduleButton; }
     public JButton getLogoutButton() { return logoutButton; }
+    public JButton getViewAppointmentsButton() { return viewAppointmentsButton; }
 }

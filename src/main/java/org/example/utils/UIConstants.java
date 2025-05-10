@@ -42,6 +42,9 @@ public class UIConstants {
      * Шрифты:
      * MAIN_TITLE_FONT - шрифт главного заголовка
      */
+    // Шрифты для таблицы
+    public static final Font TABLE_FONT = new Font("Arial", Font.PLAIN, 14);
+    public static final Font TABLE_HEADER_FONT = new Font("Arial", Font.BOLD, 14);
     public static final Font MAIN_TITLE_FONT = new Font("Old English Text MT", Font.BOLD, 48);
     public static final Font INPUT_FONT = new Font("Arial", Font.PLAIN, 14);
 

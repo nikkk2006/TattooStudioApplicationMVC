@@ -7,7 +7,6 @@ import org.example.database.WorkDao;
 import org.example.database.ScheduleDao;
 import org.example.database.AppointmentDao;
 
-
 public class MasterController {
     private final MasterModel model;
     private final MasterWindow view;
@@ -30,7 +29,6 @@ public class MasterController {
         this.scheduleDao = scheduleDao;
         this.appointmentDao = appointmentDao;
 
-        // Проверяем, что user и его ID не null
         if (user == null || user.getId() == null) {
             throw new IllegalArgumentException("User и user ID не могут быть null");
         }
@@ -39,7 +37,6 @@ public class MasterController {
         initController();
     }
 
-    // Остальные методы остаются без изменений
     private void initController() {
         setupListeners();
     }
@@ -48,6 +45,7 @@ public class MasterController {
         view.getViewScheduleButton().addActionListener(e -> handleViewSchedule());
         view.getLogoutButton().addActionListener(e -> returnToMain());
         view.getAddWorkButton().addActionListener(e -> handleAddWork());
+        view.getViewAppointmentsButton().addActionListener(e -> handleViewAppointments());
     }
 
     private void handleAddWork() {
@@ -61,6 +59,16 @@ public class MasterController {
         MasterScheduleWindow scheduleWindow = new MasterScheduleWindow(this, model.getId());
         scheduleWindow.setLocationRelativeTo(view);
         scheduleWindow.setVisible(true);
+    }
+
+    private void handleViewAppointments() {
+        ClientAppointmentsWindow appointmentsWindow = new ClientAppointmentsWindow(
+                user.getId(),
+                appointmentDao,
+                view
+        );
+        appointmentsWindow.setLocationRelativeTo(view);
+        appointmentsWindow.setVisible(true);
     }
 
     private void returnToMain() {
