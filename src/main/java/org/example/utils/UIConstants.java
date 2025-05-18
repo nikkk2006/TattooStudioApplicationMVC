@@ -59,6 +59,8 @@ public class UIConstants {
     public static final Insets BUTTON_PANEL_PADDING = new Insets(0, 80, 80, 80);
     public static final int TITLE_BOTTOM_PADDING = 100;
     public static final int BUTTON_GAP = 20;
+    public static final int MAX_IMAGE_WIDTH = 280;
+    public static final int MAX_IMAGE_HEIGHT = 180;
 
 
     public static final int TITLE_TOP_PADDING = 30;

@@ -4,6 +4,7 @@ import org.example.database.WorkDao;
 import org.example.model.MasterModel;
 import org.example.view.WorkWindow;
 import org.example.utils.ImageUtils;
+import org.example.utils.UIConstants;
 import org.example.utils.FileUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -56,9 +57,9 @@ public class WorkController {
             File selectedFile = fileChooser.getSelectedFile();
             String imagePath = selectedFile.getAbsolutePath();
 
-            // Устанавливаем путь и показываем превью
+            // Устанавливаем путь и показываем превью с ограниченными размерами
             view.setImagePath(imagePath);
-            ImageIcon icon = ImageUtils.createScaledIcon(imagePath, 300, 300);
+            ImageIcon icon = ImageUtils.createScaledIcon(imagePath, UIConstants.MAX_IMAGE_WIDTH, UIConstants.MAX_IMAGE_HEIGHT);
             view.setImagePreview(icon);
             view.getUploadImageButton().setText("Изменить изображение");
         }
