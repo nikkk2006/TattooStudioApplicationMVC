@@ -1,18 +1,18 @@
 package org.example.model;
 
 
-public class User {
+public class UserModel {
     private Integer id;
     private String name;
     private String email;
     private String password;
     private String role;
 
-    public User(String name, String email, String password, String role) {
+    public UserModel(String name, String email, String password, String role) {
         this(null, name, email, password, role);
     }
 
-    public User(Integer id, String name, String email, String password, String role) {
+    public UserModel(Integer id, String name, String email, String password, String role) {
         this.id = id;
         this.name = name;
         this.email = email;

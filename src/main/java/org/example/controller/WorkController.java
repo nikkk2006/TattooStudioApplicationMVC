@@ -2,7 +2,7 @@ package org.example.controller;
 
 import org.example.database.WorkDao;
 import org.example.model.MasterModel;
-import org.example.view.WorkView;
+import org.example.view.WorkWindow;
 import org.example.utils.ImageUtils;
 import org.example.utils.FileUtils;
 import javax.swing.*;
@@ -13,11 +13,11 @@ import java.nio.file.Paths;
 
 
 public class WorkController {
-    private final WorkView view;
+    private final WorkWindow view;
     private final WorkDao workDao;
     private final MasterModel master;
 
-    public WorkController(WorkView view, WorkDao workDao, MasterModel master) {
+    public WorkController(WorkWindow view, WorkDao workDao, MasterModel master) {
         this.view = view;
         this.workDao = workDao;
         this.master = master;

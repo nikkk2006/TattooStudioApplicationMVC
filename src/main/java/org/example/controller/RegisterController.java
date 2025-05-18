@@ -8,7 +8,7 @@ import org.example.view.LoginWindow;
 import org.example.view.MainWindow;
 import org.example.view.MasterWindow;
 import org.example.database.UserDao;
-import org.example.model.User;
+import org.example.model.UserModel;
 
 
 public class RegisterController {
@@ -60,7 +60,7 @@ public class RegisterController {
         }
 
         // Создаем нового пользователя (без ID)
-        User newUser = new User(
+        UserModel newUser = new UserModel(
                 view.getName(),
                 view.getEmail(),
                 view.getPassword(),
@@ -92,7 +92,7 @@ public class RegisterController {
         return email != null && email.matches(emailRegex);
     }
 
-    private void openMasterWindow(User user) {
+    private void openMasterWindow(UserModel user) {
         MasterWindow masterView = new MasterWindow(user);
         LoginWindow loginView = new LoginWindow(); // Для возврата после logout
 

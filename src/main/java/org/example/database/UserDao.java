@@ -1,12 +1,11 @@
 package org.example.database;
 
-import org.example.model.User;
+import org.example.model.UserModel;
 import java.sql.*;
 
 
 public class UserDao {
-    // Существующие методы остаются без изменений
-    public boolean createUser(User user) {
+    public boolean createUser(UserModel user) {
         String sql = "INSERT INTO users(name, email, password, role) VALUES(?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
@@ -33,7 +32,7 @@ public class UserDao {
         return false;
     }
 
-    public User getUserByEmail(String email) {
+    public UserModel getUserByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
@@ -43,7 +42,7 @@ public class UserDao {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                return new User(
+                return new UserModel(
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("email"),

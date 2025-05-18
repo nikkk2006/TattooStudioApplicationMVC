@@ -2,7 +2,7 @@ package org.example.controller;
 
 import org.example.view.*;
 import org.example.database.*;
-import org.example.model.User;
+import org.example.model.UserModel;
 
 
 public class LoginController {
@@ -27,7 +27,7 @@ public class LoginController {
             return;
         }
 
-        User user = userDao.getUserByEmail(view.getEmail());
+        UserModel user = userDao.getUserByEmail(view.getEmail());
 
         if (user == null) {
             view.showError("Пользователь с таким email не найден");
@@ -43,7 +43,7 @@ public class LoginController {
         redirectAfterLogin(user);
     }
 
-    private void redirectAfterLogin(User user) {
+    private void redirectAfterLogin(UserModel user) {
         view.close();
 
         switch (user.getRole().toUpperCase()) {

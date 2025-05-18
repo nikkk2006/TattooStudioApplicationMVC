@@ -4,7 +4,7 @@ import org.example.database.AppointmentDao;
 import org.example.database.UserDao;
 import org.example.database.ScheduleDao;
 import org.example.model.MasterModel;
-import org.example.model.User;
+import org.example.model.UserModel;
 import org.example.view.ClientWindow;
 import org.example.view.MasterSelectionWindow;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.List;
 
 public class MasterSelectionController {
     private MasterSelectionWindow view;
-    private User user;
+    private UserModel user;
 
-    public MasterSelectionController(MasterSelectionWindow view, User user) {
+    public MasterSelectionController(MasterSelectionWindow view, UserModel user) {
         this.view = view;
         this.user = user;
         setupListeners();

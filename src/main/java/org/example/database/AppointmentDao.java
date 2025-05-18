@@ -111,34 +111,4 @@ public class AppointmentDao {
         }
         return appointments;
     }
-
-    public boolean updateAppointmentStatus(int appointmentId, String newStatus) {
-        String sql = "UPDATE appointments SET status = ? WHERE id = ?";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, newStatus);
-            pstmt.setInt(2, appointmentId);
-
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Error updating appointment status: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean deleteAppointment(int appointmentId) {
-        String sql = "DELETE FROM appointments WHERE id = ?";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, appointmentId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Error deleting appointment: " + e.getMessage());
-            return false;
-        }
-    }
 }

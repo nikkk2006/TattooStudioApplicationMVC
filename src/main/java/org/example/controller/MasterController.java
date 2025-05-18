@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import org.example.model.MasterModel;
-import org.example.model.User;
+import org.example.model.UserModel;
 import org.example.view.*;
 import org.example.database.WorkDao;
 import org.example.database.ScheduleDao;
@@ -11,14 +11,14 @@ public class MasterController {
     private final MasterModel model;
     private final MasterWindow view;
     private final LoginWindow loginView;
-    private final User user;
+    private final UserModel user;
     private final WorkDao workDao;
     private final ScheduleDao scheduleDao;
     private final AppointmentDao appointmentDao;
 
     public MasterController(MasterWindow view,
                             LoginWindow loginView,
-                            User user,
+                            UserModel user,
                             WorkDao workDao,
                             ScheduleDao scheduleDao,
                             AppointmentDao appointmentDao) {
@@ -49,7 +49,7 @@ public class MasterController {
     }
 
     private void handleAddWork() {
-        WorkView workView = new WorkView();
+        WorkWindow workView = new WorkWindow();
         new WorkController(workView, workDao, model);
         workView.setLocationRelativeTo(view);
         workView.setVisible(true);

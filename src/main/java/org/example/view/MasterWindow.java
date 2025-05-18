@@ -1,6 +1,6 @@
 package org.example.view;
 
-import org.example.model.User;
+import org.example.model.UserModel;
 import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
@@ -12,9 +12,9 @@ public class MasterWindow extends JFrame {
     private JButton viewScheduleButton;
     private JButton viewAppointmentsButton;
     private JButton logoutButton;
-    private final User user;
+    private final UserModel user;
 
-    public MasterWindow(User user) {
+    public MasterWindow(UserModel user) {
         this.user = user;
         initUI(user.getName()); // Используем имя пользователя для отображения
     }

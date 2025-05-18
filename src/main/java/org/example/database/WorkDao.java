@@ -11,10 +11,6 @@ public class WorkDao {
             "INSERT INTO works(user_id, title, description, price, image_path) VALUES(?, ?, ?, ?, ?)";
     private static final String GET_WORKS_BY_MASTER_SQL =
             "SELECT * FROM works WHERE user_id = ?";
-    private static final String DELETE_WORK_SQL =
-            "DELETE FROM works WHERE id = ? AND user_id = ?";
-    private static final String UPDATE_WORK_SQL =
-            "UPDATE works SET title = ?, description = ?, price = ?, image_path = ? WHERE id = ?";
 
     public boolean createWork(int masterId, Work work, String savedImagePath) {
         try (Connection conn = DatabaseManager.getConnection();

@@ -5,7 +5,7 @@ import org.example.database.UserDao;
 import org.example.database.ScheduleDao;
 import org.example.model.ClientModel;
 import org.example.model.MasterModel;
-import org.example.model.User;
+import org.example.model.UserModel;
 import org.example.view.AppointmentWindow;
 import org.example.view.ClientWindow;
 import org.example.view.MainWindow;
@@ -18,13 +18,13 @@ import java.util.HashMap;
 public class ClientController {
     private ClientModel model;
     private ClientWindow view;
-    private User currentUser;
+    private UserModel currentUser;
     private AppointmentDao appointmentDao;
     private UserDao userDao;
     private ScheduleDao scheduleDao;
     private Map<String, Integer> mastersMap;
 
-    public ClientController(ClientWindow view, User user,
+    public ClientController(ClientWindow view, UserModel user,
                             AppointmentDao appointmentDao, UserDao userDao, ScheduleDao scheduleDao) {
         this.view = view;
         this.currentUser = user;

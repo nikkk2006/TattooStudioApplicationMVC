@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class WorkView extends JFrame {
+public class WorkWindow extends JFrame {
     private JTextField titleField;
     private JTextArea descriptionArea;
     private JButton uploadImageButton;
@@ -16,7 +16,7 @@ public class WorkView extends JFrame {
     private JTextField priceField;
     private String savedImagePath;
 
-    public WorkView() {
+    public WorkWindow() {
         initUI();
         setupLayout();
     }

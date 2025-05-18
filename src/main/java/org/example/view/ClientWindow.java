@@ -1,10 +1,10 @@
 package org.example.view;
 
-import org.example.model.User;
+import org.example.model.UserModel;
 import org.example.utils.GradientPanel;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+
 import static org.example.utils.UIConstants.*;
 
 
@@ -12,10 +12,10 @@ public class ClientWindow extends JFrame {
     private JButton chooseMasterButton;
     private JButton makeAppointmentButton;
     private JButton backButton;
-    private User user; // Добавляем поле для хранения пользователя
+    private UserModel user; // Добавляем поле для хранения пользователя
 
     // Основной конструктор, принимающий User
-    public ClientWindow(User user) {
+    public ClientWindow(UserModel user) {
         this.user = user;
         initComponents(user.getName()); // Используем имя пользователя
         setupFrame();
@@ -102,7 +102,7 @@ public class ClientWindow extends JFrame {
     public JButton getBackButton() { return backButton; }
 
     // Геттер для пользователя
-    public User getUser() { return user; }
+    public UserModel getUser() { return user; }
 
     public void close() {
         dispose();

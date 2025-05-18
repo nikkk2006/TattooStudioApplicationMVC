@@ -2,13 +2,13 @@ package org.example.model;
 
 
 public class ClientModel {
-    private final User currentUser;
+    private final UserModel currentUser;
 
-    public ClientModel(User user) {
+    public ClientModel(UserModel user) {
         this.currentUser = user;
     }
 
-    public User getUser() {
+    public UserModel getUser() {
         return currentUser;
     }
 
